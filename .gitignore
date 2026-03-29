@@ -1,0 +1,72 @@
+# File di sistema 
+.DS_Store
+Thumbs.db
+Icon?
+
+# File temporanei o di backup degli editor 
+*.tmp
+*.bak
+*.swp
+*.lock
+*.log
+
+# Cartelle generate durante il processo di build
+.gradle/
+build/
+*/build/
+
+# Output finali (eseguibili)
+*.apk
+*.ap_
+*.aab
+
+# File generati da analisi o build native
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Artifact di compilazione Java/Kotlin
+*.class
+out/
+
+# Configurazioni locali (percorsi locali dell'SDK) 
+local.properties
+
+# File con credenziali Firebase o chiavi Google
+google-services.json
+
+# Chiavi di firma dell'applicazione (Keystore)
+*.jks
+*.keystore
+
+# Tutta la cartella delle impostazioni dell'IDE
+.idea/
+
+# File di progetto specifici di IntelliJ/Android Studio
+*.iml
+*.iws
+*.ipr
+
+# File di navigazione dell'editor
+.navigation/
+/.navigation/
+
+# Native Development Kit (NDK) artifacts
+obj/
+libs/
+
+# Proguard / R8 
+proguard/
+
+# Esportazione degli schemi del database Room
+schemas/
+
+# Fastlane (automazione deployment)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# File da mantenere
+# Per compilare il progetto senza dover installare Gradle
+!gradle/wrapper/gradle-wrapper.jar
