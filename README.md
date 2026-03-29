@@ -1,1 +1,4 @@
-Progetto intermedio del corso Programmazione di Sistemi Embedded 25-26
+# Simon Game Prototype
+
+Progetto intermedio del corso
+**Programmazione di Sistemi Embedded 25-26**
