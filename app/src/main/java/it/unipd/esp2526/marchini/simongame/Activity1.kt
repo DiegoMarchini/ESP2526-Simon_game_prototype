@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -62,9 +63,9 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
     val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
     val buttonTexts = listOf("R", "G", "B", "C", "M", "Y", "Cancella", "Fine Partita")
     var t by remember { mutableStateOf("testo iniziale")}
-
+    
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ){
@@ -174,18 +175,18 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
         ){
             Button( // Cancella
                 onClick = buttonAction,
-                modifier = buttonModifier,
-                //colors = ButtonDefaults.buttonColors(buttonColors[5]),
-                shape = RectangleShape
+                modifier = buttonModifier.padding(24.dp),
+                // colors = ButtonDefaults.buttonColors(buttonColors[5]),
+                // shape = RectangleShape
             ) {
                 Text(text = buttonTexts[6])
             }
 
             Button( // Fine Partita
                 onClick = buttonAction,
-                modifier = buttonModifier,
-                //colors = ButtonDefaults.buttonColors(buttonColors[5]),
-                shape = RectangleShape
+                modifier = buttonModifier.padding(24.dp),
+                // colors = ButtonDefaults.buttonColors(buttonColors[5]),
+                // shape = RectangleShape
             ) {
                 Text(text = buttonTexts[7])
             }
