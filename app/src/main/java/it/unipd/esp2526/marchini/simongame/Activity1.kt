@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,6 +67,7 @@ class Activity1 : ComponentActivity() {
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
 
+    val orientation = LocalConfiguration.current.orientation
 
     var t by rememberSaveable { mutableStateOf("")}
 
