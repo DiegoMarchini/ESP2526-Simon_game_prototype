@@ -34,6 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
+val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
+val buttonTexts = listOf("R", "G", "B", "C", "M", "Y", "Cancella", "Fine Partita")
 class Activity1 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,10 +62,9 @@ class Activity1 : ComponentActivity() {
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
 
-    val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
-    val buttonTexts = listOf("R", "G", "B", "C", "M", "Y", "Cancella", "Fine Partita")
-    var t by remember { mutableStateOf("testo iniziale")}
-    
+
+    var t by remember { mutableStateOf("")}
+
     Column(
         modifier = modifier.padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,7 +88,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
         ) {
 
             Button( // R
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(0, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[0]),
                 shape = RectangleShape
@@ -96,7 +97,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
             }
 
             Button( // G
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(1, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[1]),
                 shape = RectangleShape
@@ -113,7 +114,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
         ) {
 
             Button( // B
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(2, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[2]),
                 shape = RectangleShape
@@ -122,7 +123,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
             }
 
             Button( // C
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(3, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[3]),
                 shape = RectangleShape
@@ -138,7 +139,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
         ) {
 
             Button( // M
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(4, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[4]),
                 shape = RectangleShape
@@ -147,7 +148,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
             }
 
             Button( // Y
-                onClick = buttonAction,
+                onClick = {t = coloredButtonAction(5, t)},
                 modifier = buttonModifier,
                 colors = ButtonDefaults.buttonColors(buttonColors[5]),
                 shape = RectangleShape
@@ -197,4 +198,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
 @Composable
 fun ScreenOnePreview() {
     it.unipd.esp2526.marchini.simongame.ScreenOne(buttonAction = {})
+}
+
+fun coloredButtonAction(index : Int, text : String) : String{
+    val t : String
+    if(text.isNotBlank())  t = text + ", " + buttonTexts[index]
+    else t = buttonTexts[index]
+    return t
 }
