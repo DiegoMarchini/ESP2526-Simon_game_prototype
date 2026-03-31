@@ -1,5 +1,7 @@
 package it.unipd.esp2526.marchini.simongame
 
+import android.R.attr.orientation
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,9 +22,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.R
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,134 +67,232 @@ class Activity1 : ComponentActivity() {
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
 
 
-    var t by remember { mutableStateOf("")}
-
-    Column(
-        modifier = modifier.padding(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ){
-        val buttonModifier = Modifier
-            .weight(1f)
-            .fillMaxHeight()
-
-        val rowModifier = Modifier
-            .weight(1f)
-
-        val textModifier = Modifier
-            .weight(1f)
+    var t by rememberSaveable { mutableStateOf("")}
 
 
-        Row( // riga 1
-            modifier = rowModifier,
+
+
+    if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+        Row(
+            modifier = modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            val buttonModifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
 
-            Button( // R
-                onClick = {t = coloredButtonAction(0, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[0]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[0])
-            }
+            val rowModifier = Modifier
+                .weight(1f)
 
-            Button( // G
-                onClick = {t = coloredButtonAction(1, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[1]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[1])
+            val textModifier = Modifier
+                .weight(1f)
+
+            ColoredMatrix(
+                rowModifier = rowModifier,
+                buttonModifier = buttonModifier,
+                buttonAction = {
+                        index -> t = coloredButtonAction(index, t)
+                }
+            )
+            Column(
+                modifier = modifier.padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ){
+                TextArea(
+                    text = t,
+                    rowModifier = rowModifier,
+                    textModifier = textModifier
+                )
+                ButtonArea(
+                    rowModifier = rowModifier,
+                    buttonModifier = buttonModifier,
+                    buttonAction1 = { // action del button Cancella
+                        t = ""
+                    },
+                    buttonAction2 = {}
+                )
             }
 
         }
-
-        Row( // riga 2
-            modifier = rowModifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+    }
+    else{
+        Column(
+            modifier = modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            val buttonModifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
 
-            Button( // B
-                onClick = {t = coloredButtonAction(2, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[2]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[2])
-            }
+            val rowModifier = Modifier
+                .weight(1f)
 
-            Button( // C
-                onClick = {t = coloredButtonAction(3, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[3]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[3])
-            }
+            val textModifier = Modifier
+                .weight(1f)
+
+            ColoredMatrix(
+                rowModifier = rowModifier,
+                buttonModifier = buttonModifier,
+                buttonAction = {
+                    index -> t = coloredButtonAction(index, t)
+                }
+            )
+            TextArea(
+                text = t,
+                rowModifier = rowModifier,
+                textModifier = textModifier
+            )
+            ButtonArea(
+                rowModifier = rowModifier,
+                buttonModifier = buttonModifier,
+                buttonAction1 = { // action del button Cancella
+                    t = ""
+                },
+                buttonAction2 = {}
+            )
 
         }
-        Row( // riga 3
-            modifier = rowModifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+    }
+}
+
+@Composable
+fun ColoredMatrix(
+                  rowModifier : Modifier,
+                  buttonModifier : Modifier,
+                  buttonAction : (Int) -> Unit
+){
+    Row( // riga 1
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+
+        Button( // R
+            onClick = { buttonAction(0) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[0]),
+            shape = RectangleShape
         ) {
-
-            Button( // M
-                onClick = {t = coloredButtonAction(4, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[4]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[4])
-            }
-
-            Button( // Y
-                onClick = {t = coloredButtonAction(5, t)},
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(buttonColors[5]),
-                shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[5])
-            }
-
+            Text(text = buttonTexts[0])
         }
 
-        Row( // riga 4
-            modifier = rowModifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ){
+        Button( // G
+            onClick = { buttonAction(1) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[1]),
+            shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[1])
+        }
+
+    }
+
+    Row( // riga 2
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+
+        Button( // B
+            onClick = { buttonAction(2) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[2]),
+            shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[2])
+        }
+
+        Button( // C
+            onClick = { buttonAction(3) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[3]),
+            shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[3])
+        }
+
+    }
+    Row( // riga 3
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+
+        Button( // M
+            onClick = { buttonAction(4) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[4]),
+            shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[4])
+        }
+
+        Button( // Y
+            onClick = { buttonAction(5) },
+            modifier = buttonModifier,
+            colors = ButtonDefaults.buttonColors(buttonColors[5]),
+            shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[5])
+        }
+
+    }
+}
+
+
+
+@Composable
+fun TextArea(
+    text : String,
+    rowModifier: Modifier,
+    textModifier: Modifier
+){
+    Row( // riga 4
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         Text( // testo multiriga non editabile
             modifier = textModifier,
             textAlign = Center,
-            text = t
+            text = text
         )
-        }
-        Row( // riga 5
-            modifier = rowModifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ){
-            Button( // Cancella
-                onClick = buttonAction,
-                modifier = buttonModifier.padding(24.dp),
-                // colors = ButtonDefaults.buttonColors(buttonColors[5]),
-                // shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[6])
-            }
+    }
+}
 
-            Button( // Fine Partita
-                onClick = buttonAction,
-                modifier = buttonModifier.padding(24.dp),
-                // colors = ButtonDefaults.buttonColors(buttonColors[5]),
-                // shape = RectangleShape
-            ) {
-                Text(text = buttonTexts[7])
-            }
+@Composable
+fun ButtonArea(
+    rowModifier: Modifier,
+    buttonModifier: Modifier,
+    buttonAction1: () -> Unit,
+    buttonAction2: () -> Unit
+){
+    Row( // riga 5
+        modifier = rowModifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Button(
+            // Cancella
+            onClick = { buttonAction1() },
+            modifier = buttonModifier.padding(24.dp),
+            // colors = ButtonDefaults.buttonColors(buttonColors[5]),
+            // shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[6])
+        }
+
+        Button(
+            // Fine Partita
+            onClick = { buttonAction2() },
+            modifier = buttonModifier.padding(24.dp),
+            // colors = ButtonDefaults.buttonColors(buttonColors[5]),
+            // shape = RectangleShape
+        ) {
+            Text(text = buttonTexts[7])
         }
     }
 }
