@@ -51,12 +51,7 @@ class Activity1 : ComponentActivity() {
                     ScreenOne(
                         modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
-
-                        buttonAction = {
-
-                        }
-
+                        .padding(innerPadding)
                         )
                 }
             }
@@ -65,14 +60,11 @@ class Activity1 : ComponentActivity() {
 }
 
 @Composable
-fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
+fun ScreenOne(modifier: Modifier = Modifier) {
 
     val orientation = LocalConfiguration.current.orientation
 
     var t by rememberSaveable { mutableStateOf("")}
-
-
-
 
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
         Row(
@@ -89,7 +81,12 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
 
             val textModifier = Modifier
                 .weight(1f)
-
+            Column(
+                modifier = modifier.padding(12.dp)
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ){
             ColoredMatrix(
                 rowModifier = rowModifier,
                 buttonModifier = buttonModifier,
@@ -97,8 +94,10 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
                         index -> t = coloredButtonAction(index, t)
                 }
             )
+            }
             Column(
-                modifier = modifier.padding(12.dp),
+                modifier = modifier.padding(12.dp)
+                                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ){
@@ -301,7 +300,7 @@ fun ButtonArea(
 @Preview(showBackground = true)
 @Composable
 fun ScreenOnePreview() {
-    it.unipd.esp2526.marchini.simongame.ScreenOne(buttonAction = {})
+    it.unipd.esp2526.marchini.simongame.ScreenOne()
 }
 
 fun coloredButtonAction(index : Int, text : String) : String{
