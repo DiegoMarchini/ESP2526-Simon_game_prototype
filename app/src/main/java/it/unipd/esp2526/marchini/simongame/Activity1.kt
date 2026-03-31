@@ -5,9 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -15,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,38 +51,71 @@ class Activity1 : ComponentActivity() {
 
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction: () -> Unit) {
-    Row(modifier = modifier,
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)){
 
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "R")
+    val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
+    val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
+
+    Column(modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally){
+        val buttonModifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+        val rowModifier = Modifier
+            .weight(1f)
+        Row(
+            // modifier = modifier,
+            modifier = rowModifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            Button(onClick = buttonAction, modifier = buttonModifier, colors = ButtonDefaults.buttonColors(buttonColors[0]), shape = RectangleShape) {
+                Text(text = buttonTexts[0])
+            }
+
+            Button(onClick = buttonAction, modifier = buttonModifier,colors = ButtonDefaults.buttonColors(buttonColors[1]), shape = RectangleShape) {
+                Text(text = buttonTexts[1])
+            }
+
         }
 
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "G")
+        Row(
+            // modifier = modifier,
+            modifier = rowModifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+
+            Button(onClick = buttonAction, modifier = buttonModifier, colors = ButtonDefaults.buttonColors(buttonColors[2]), shape = RectangleShape) {
+                Text(text = buttonTexts[2])
+            }
+
+            Button(onClick = buttonAction, modifier = buttonModifier, colors = ButtonDefaults.buttonColors(buttonColors[3]), shape = RectangleShape) {
+                Text(text = buttonTexts[3])
+            }
+
         }
+        Row(
+            // modifier = modifier,
+            modifier = rowModifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
 
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "B")
-        }
-    }
+            Button(onClick = buttonAction, modifier = buttonModifier, colors = ButtonDefaults.buttonColors(buttonColors[4]), shape = RectangleShape) {
+                Text(text = buttonTexts[4])
+            }
 
-    Row(modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)){
+            Button(onClick = buttonAction, modifier = buttonModifier, colors = ButtonDefaults.buttonColors(buttonColors[5]), shape = RectangleShape) {
+                Text(text = buttonTexts[5])
+            }
 
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "C")
-        }
-
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "M")
-        }
-
-        FilledTonalButton(onClick = buttonAction) {
-            Text(text = "Y")
         }
     }
 }
-
+@Preview(showBackground = true)
+@Composable
+fun ScreenOnePreview() {
+    it.unipd.esp2526.marchini.simongame.ScreenOne(buttonAction = {})
+}
