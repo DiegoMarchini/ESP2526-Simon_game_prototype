@@ -1,6 +1,7 @@
 package it.unipd.esp2526.marchini.simongame
 
 import android.R.attr.orientation
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,7 +22,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.R
+//import androidx.compose.runtime.R
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +52,12 @@ class Activity1 : ComponentActivity() {
                     ScreenOne(
                         modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
+                        .padding(innerPadding),
+
+                        buttonAction = {
+                            val myIntent = Intent(this, Activity2::class.java)
+                            startActivity(myIntent)
+                        }
                         )
                 }
             }
@@ -60,11 +66,13 @@ class Activity1 : ComponentActivity() {
 }
 
 @Composable
-fun ScreenOne(modifier: Modifier = Modifier) {
+fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
     val orientation = LocalConfiguration.current.orientation
 
     var t by rememberSaveable { mutableStateOf("")}
+
+
 
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
         Row(
@@ -112,7 +120,7 @@ fun ScreenOne(modifier: Modifier = Modifier) {
                     buttonAction1 = { // action del button Cancella
                         t = ""
                     },
-                    buttonAction2 = {}
+                    buttonAction2 = buttonAction
                 )
             }
 
@@ -152,7 +160,7 @@ fun ScreenOne(modifier: Modifier = Modifier) {
                 buttonAction1 = { // action del button Cancella
                     t = ""
                 },
-                buttonAction2 = {}
+                buttonAction2 = buttonAction
             )
 
         }
@@ -165,85 +173,29 @@ fun ColoredMatrix(
                   buttonModifier : Modifier,
                   buttonAction : (Int) -> Unit
 ){
-    Row( // riga 1
-        modifier = rowModifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
 
-        Button( // R
-            onClick = { buttonAction(0) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[0]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[0])
+    repeat(3){ // creazione delle 3 righe della matrice colorata
+        Row(
+            modifier = rowModifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ){
+            repeat(2){ // creazione dei bottoni
+                val i = index // fisso il valore assunto da index in questa iterazione
+                Button(
+                    onClick = { buttonAction(i) },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(buttonColors[index]),
+                    shape = RectangleShape
+                ) {
+                    Text(text = buttonTexts[index])
+                }
+                index++
+            }
         }
-
-        Button( // G
-            onClick = { buttonAction(1) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[1]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[1])
-        }
-
-    }
-
-    Row( // riga 2
-        modifier = rowModifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-
-        Button( // B
-            onClick = { buttonAction(2) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[2]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[2])
-        }
-
-        Button( // C
-            onClick = { buttonAction(3) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[3]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[3])
-        }
-
-    }
-    Row( // riga 3
-        modifier = rowModifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-
-        Button( // M
-            onClick = { buttonAction(4) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[4]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[4])
-        }
-
-        Button( // Y
-            onClick = { buttonAction(5) },
-            modifier = buttonModifier,
-            colors = ButtonDefaults.buttonColors(buttonColors[5]),
-            shape = RectangleShape
-        ) {
-            Text(text = buttonTexts[5])
-        }
-
     }
 }
-
-
 
 @Composable
 fun TextArea(
@@ -279,9 +231,7 @@ fun ButtonArea(
         Button(
             // Cancella
             onClick = { buttonAction1() },
-            modifier = buttonModifier.padding(24.dp),
-            // colors = ButtonDefaults.buttonColors(buttonColors[5]),
-            // shape = RectangleShape
+            modifier = buttonModifier.padding(24.dp)
         ) {
             Text(text = buttonTexts[6])
         }
@@ -289,9 +239,7 @@ fun ButtonArea(
         Button(
             // Fine Partita
             onClick = { buttonAction2() },
-            modifier = buttonModifier.padding(24.dp),
-            // colors = ButtonDefaults.buttonColors(buttonColors[5]),
-            // shape = RectangleShape
+            modifier = buttonModifier.padding(24.dp)
         ) {
             Text(text = buttonTexts[7])
         }
@@ -300,7 +248,7 @@ fun ButtonArea(
 @Preview(showBackground = true)
 @Composable
 fun ScreenOnePreview() {
-    it.unipd.esp2526.marchini.simongame.ScreenOne()
+    //it.unipd.esp2526.marchini.simongame.ScreenOne()
 }
 
 fun coloredButtonAction(index : Int, text : String) : String{
