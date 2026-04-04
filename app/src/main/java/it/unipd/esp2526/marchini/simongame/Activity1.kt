@@ -68,12 +68,16 @@ class Activity1 : ComponentActivity() {
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
+    // catturo l'orientation
     val orientation = LocalConfiguration.current.orientation
 
+    // stato dell'activity1 : il testo multiriga non editabile
     var t by rememberSaveable { mutableStateOf("")}
 
+    // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row, column, ecc)
+    // piuttosto che l'imposizione di vincoli tra oggetti
 
-
+    // layout se mi trovo in modalità landscape
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
         Row(
             modifier = modifier.padding(12.dp),
@@ -126,6 +130,8 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
         }
     }
+
+    // layout se mi trovo in modalità portrait
     else{
         Column(
             modifier = modifier.padding(12.dp),
@@ -233,7 +239,7 @@ fun ButtonArea(
             onClick = { buttonAction1() },
             modifier = buttonModifier.padding(24.dp)
         ) {
-            Text(text = buttonTexts[6])
+            Text(text = stringResource(R.string.cancel))
         }
 
         Button(
@@ -241,7 +247,7 @@ fun ButtonArea(
             onClick = { buttonAction2() },
             modifier = buttonModifier.padding(24.dp)
         ) {
-            Text(text = buttonTexts[7])
+            Text(text = stringResource(R.string.end_game))
         }
     }
 }
