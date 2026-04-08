@@ -7,7 +7,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
@@ -243,11 +246,21 @@ fun TextArea(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // testo multiriga non editabile
-        Text(
-            modifier = textModifier,
-            textAlign = Center,
-            text = text
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ){
+            Text(
+                modifier = textModifier,
+                textAlign = Center,
+                color = Color.Black,
+                text = text
+            )
+        }
+
     }
 }
 
