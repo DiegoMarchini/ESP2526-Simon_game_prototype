@@ -268,7 +268,7 @@ fun ButtonArea(
             onClick = { buttonAction1() },
             modifier = buttonModifier.padding(24.dp)
         ) {
-            Text(text = stringResource(R.string.cancel))
+            Text(text = stringResource(R.string.delete))
         }
 
         // button "Fine Partita"
