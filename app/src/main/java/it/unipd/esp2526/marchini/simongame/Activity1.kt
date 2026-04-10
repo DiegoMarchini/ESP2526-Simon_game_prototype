@@ -58,9 +58,11 @@ class Activity1 : ComponentActivity() {
                         .padding(innerPadding),
 
                         // azione che passo per generare l'intent alla pressione del button "Fine Partita"
-                        buttonAction = {
-                            val myIntent = Intent(this, Activity2::class.java)
-                            startActivity(myIntent)
+                        buttonAction = { gamesHistory ->
+                            val intent = Intent(this, Activity2::class.java)
+                            intent.putStringArrayListExtra("GAMES_HISTORY",ArrayList(gamesHistory))
+                            startActivity(intent)
+
                         }
                         )
                 }
@@ -72,16 +74,29 @@ class Activity1 : ComponentActivity() {
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
 val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 @Composable
-fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
+fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Unit) {
 
     // catturo l'orientation
     val orientation = LocalConfiguration.current.orientation
 
     // stato dell'activity1 : il testo multiriga non editabile
-    var t by rememberSaveable { mutableStateOf("")}
+    var sequence by rememberSaveable { mutableStateOf("")}
 
     // stato dell'activity1 : il numero di button premuti
-    var count  by rememberSaveable { mutableIntStateOf(0) }
+    // var count  by rememberSaveable { mutableIntStateOf(0) }
+
+    var gamesHistory by rememberSaveable{ mutableStateOf(listOf<String>())}
+
+    val deleteAction : () -> Unit = {
+        sequence = ""
+        //count = 0
+    }
+
+    val endGameAction : () -> Unit = {
+        gamesHistory += sequence
+        sequence = ""
+        buttonAction(gamesHistory)
+    }
 
     // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row, column, ecc)
     // piuttosto che l'imposizione di vincoli tra oggetti
@@ -106,8 +121,8 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
                 // azione dei button colorati
                 buttonAction = {
-                        index -> t = coloredButtonAction(index, t)
-                        count++
+                        index -> sequence = coloredButtonAction(index, sequence)
+                        //count++
                 }
             )
             }
@@ -119,7 +134,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
             ){
                 // area di testo multiriga non editabile
                 TextArea(
-                    text = t,
+                    text = sequence,
                     modifier = Modifier.weight(1f),
                 )
 
@@ -128,13 +143,10 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
                     modifier = Modifier.weight(1f),
 
                     // azione del button "Cancella"
-                    deleteAction = {
-                        t = ""
-                        count = 0
-                    },
+                    deleteAction = deleteAction,
 
                     // azione del button "Fine Partita"
-                    endGameAction = buttonAction
+                    endGameAction = endGameAction
                 )
             }
         }
@@ -153,14 +165,14 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
                 // azione dei button colorati
                 buttonAction = {
-                    index -> t = coloredButtonAction(index, t)
-                    count++
+                    index -> sequence = coloredButtonAction(index, sequence)
+                    //count++
                 }
             )
 
             // area di testo multiriga non editabile
             TextArea(
-                text = t,
+                text = sequence,
                 modifier = Modifier.weight(1f)
             )
 
@@ -169,13 +181,10 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
                 modifier = Modifier.weight(1f),
 
                 // azione del button "Cancella"
-                deleteAction = {
-                    t = ""
-                    count = 0
-                },
+                deleteAction = deleteAction,
 
                 // azione del button "Fine Partita"
-                endGameAction = buttonAction
+                endGameAction = endGameAction
             )
         }
     }
@@ -254,7 +263,7 @@ fun ButtonArea(
     ) {
         // button "Cancella"
         Button(
-            onClick = { deleteAction() },
+            onClick =  deleteAction,
             modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
             Text(text = stringResource(R.string.delete))
@@ -262,7 +271,7 @@ fun ButtonArea(
 
         // button "Fine Partita"
         Button(
-            onClick = { endGameAction() },
+            onClick =  endGameAction,
             modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
             Text(text = stringResource(R.string.end_game))

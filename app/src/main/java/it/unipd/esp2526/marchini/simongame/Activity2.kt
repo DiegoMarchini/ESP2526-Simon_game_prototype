@@ -30,13 +30,17 @@ class Activity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val gamesHistory = intent.getStringArrayListExtra("GAMES_HISTORY") ?: arrayListOf()
+
         setContent {
             SimonGameTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ScreenTwo(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding)
+                            .padding(innerPadding),
+                        gamesHistory = gamesHistory
                     )
                 }
             }
@@ -48,14 +52,14 @@ class Activity2 : ComponentActivity() {
 val testList = listOf("partita1","partita2","partita3","partita4","partita5","partita6",
     "partita7","partita8","partita9","partita10","partita11","partita12")
 @Composable
-fun ScreenTwo(modifier: Modifier = Modifier){
+fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
 
         Column(
             modifier = modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            GamesList(modifier, testList)
+            GamesList(modifier, gamesHistory)
         }
 
 }
