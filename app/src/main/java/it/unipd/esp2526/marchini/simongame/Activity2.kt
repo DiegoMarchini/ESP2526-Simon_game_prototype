@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -71,7 +72,7 @@ fun GamesList(modifier: Modifier = Modifier, games : List<String>){
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ){
-        items(games){
+        items(games.reversed()){
             game -> GameStatsRow(game)
         }
     }
@@ -84,8 +85,15 @@ fun GameStatsRow(game : String){
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ){
+        Text(
+            text = if(game.isNotBlank()){
+                (game.count { it == ' ' } + 1).toString()
+            }
+            else "0"
+        )
+
         Text(
             text = game,
             maxLines = 1,
