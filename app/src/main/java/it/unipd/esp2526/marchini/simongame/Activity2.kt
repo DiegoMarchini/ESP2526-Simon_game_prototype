@@ -63,7 +63,7 @@ fun ScreenTwo(modifier: Modifier = Modifier){
 @Composable
 fun GamesList(modifier: Modifier = Modifier, games : List<String>){
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ){
