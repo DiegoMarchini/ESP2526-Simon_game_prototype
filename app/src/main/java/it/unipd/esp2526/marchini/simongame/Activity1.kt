@@ -93,17 +93,8 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            val buttonModifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-
-            val rowModifier = Modifier
-                .weight(1f)
-
-            val textModifier = Modifier
-                .weight(1f)
             Column(
-                modifier = modifier.padding(12.dp)
+                modifier = Modifier.padding(12.dp)
                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -111,8 +102,9 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
             // matrice 3x2 di button colorati
             ColoredMatrix(
-                rowModifier = rowModifier,
-                buttonModifier = buttonModifier,
+                modifier = Modifier.weight(1f),
+
+                // azione dei button colorati
                 buttonAction = {
                         index -> t = coloredButtonAction(index, t)
                         count++
@@ -120,7 +112,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
             )
             }
             Column(
-                modifier = modifier.padding(12.dp)
+                modifier = Modifier.padding(12.dp)
                                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -128,23 +120,21 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
                 // area di testo multiriga non editabile
                 TextArea(
                     text = t,
-                    rowModifier = rowModifier,
-                    textModifier = textModifier
+                    modifier = Modifier.weight(1f),
                 )
 
                 // area dei button "Cancella" e "Fine Partita"
                 ButtonArea(
-                    rowModifier = rowModifier,
-                    buttonModifier = buttonModifier,
+                    modifier = Modifier.weight(1f),
 
                     // azione del button "Cancella"
-                    buttonAction1 = {
+                    deleteAction = {
                         t = ""
                         count = 0
                     },
 
                     // azione del button "Fine Partita"
-                    buttonAction2 = buttonAction
+                    endGameAction = buttonAction
                 )
             }
         }
@@ -157,20 +147,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            val buttonModifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-
-            val rowModifier = Modifier
-                .weight(1f)
-
-            val textModifier = Modifier
-                .weight(1f)
-
             // matrice 3x2 di button colorati
             ColoredMatrix(
-                rowModifier = rowModifier,
-                buttonModifier = buttonModifier,
+                modifier = Modifier.weight(1f),
+
+                // azione dei button colorati
                 buttonAction = {
                     index -> t = coloredButtonAction(index, t)
                     count++
@@ -180,23 +161,21 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
             // area di testo multiriga non editabile
             TextArea(
                 text = t,
-                rowModifier = rowModifier,
-                textModifier = textModifier
+                modifier = Modifier.weight(1f)
             )
 
             // area dei button "Cancella" e "Fine Partita"
             ButtonArea(
-                rowModifier = rowModifier,
-                buttonModifier = buttonModifier,
+                modifier = Modifier.weight(1f),
 
                 // azione del button "Cancella"
-                buttonAction1 = {
+                deleteAction = {
                     t = ""
                     count = 0
                 },
 
                 // azione del button "Fine Partita"
-                buttonAction2 = buttonAction
+                endGameAction = buttonAction
             )
         }
     }
@@ -204,8 +183,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : () -> Unit) {
 
 @Composable
 fun ColoredMatrix(
-                  rowModifier : Modifier,
-                  buttonModifier : Modifier,
+                  modifier : Modifier,
                   buttonAction : (Int) -> Unit
 ){
     var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
@@ -213,7 +191,7 @@ fun ColoredMatrix(
     // creazione delle 3 righe della matrice colorata
     repeat(3){
         Row(
-            modifier = rowModifier,
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ){
@@ -222,7 +200,7 @@ fun ColoredMatrix(
                 val i = index // fisso il valore assunto da index in questa iterazione
                 Button(
                     onClick = { buttonAction(i) },
-                    modifier = buttonModifier,
+                    modifier = modifier.fillMaxHeight(),
                     colors = ButtonDefaults.buttonColors(buttonColors[index]),
                     shape = RectangleShape
                 ) {
@@ -237,11 +215,10 @@ fun ColoredMatrix(
 @Composable
 fun TextArea(
     text : String,
-    rowModifier: Modifier,
-    textModifier: Modifier
+    modifier : Modifier
 ){
     Row( // riga 4
-        modifier = rowModifier,
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -254,7 +231,7 @@ fun TextArea(
             contentAlignment = Alignment.Center
         ){
             Text(
-                modifier = textModifier,
+                modifier = modifier,
                 textAlign = Center,
                 color = Color.Black,
                 text = text
@@ -266,28 +243,27 @@ fun TextArea(
 
 @Composable
 fun ButtonArea(
-    rowModifier: Modifier,
-    buttonModifier: Modifier,
-    buttonAction1: () -> Unit,
-    buttonAction2: () -> Unit
+    modifier : Modifier,
+    deleteAction : () -> Unit,
+    endGameAction : () -> Unit
 ){
     Row(
-        modifier = rowModifier,
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // button "Cancella"
         Button(
-            onClick = { buttonAction1() },
-            modifier = buttonModifier.padding(24.dp)
+            onClick = { deleteAction() },
+            modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
             Text(text = stringResource(R.string.delete))
         }
 
         // button "Fine Partita"
         Button(
-            onClick = { buttonAction2() },
-            modifier = buttonModifier.padding(24.dp)
+            onClick = { endGameAction() },
+            modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
             Text(text = stringResource(R.string.end_game))
         }
@@ -296,8 +272,9 @@ fun ButtonArea(
 
 // azione eseguita da ogni button colorato alla pressione
 fun coloredButtonAction(index : Int, text : String) : String{
-    val t : String
-    if(text.isNotBlank())  t = text + ", " + buttonTexts[index]
-    else t = buttonTexts[index]
+    val t = if(text.isNotBlank()){
+        "$text, ${buttonTexts[index]}"
+    }
+    else buttonTexts[index]
     return t
 }
