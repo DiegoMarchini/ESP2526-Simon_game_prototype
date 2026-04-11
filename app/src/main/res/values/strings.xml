@@ -3,4 +3,5 @@
     <string name="app_name" translatable="false">Simon Game</string>
     <string name="delete">Cancella</string>
     <string name="end_game">Fine Partita</string>
+    <string name="games_history">Storico Partite</string>
 </resources>
