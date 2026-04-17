@@ -86,15 +86,24 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     // questa lista viene passsata con un intent ad Activity2 per poi visualizzare lo storico delle partite
     var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
 
+    // azione dei tasti colorati, riceve come parametro l'indice del button premuto
+    // e aggiunge la lettera corrispondente al colore del tasto premuto nella sequenza
+    // funzione passata come parametro al composable ColoredMatrix contenente i button colorati
+    val coloredButtonAction : (Int) -> Unit = { index ->
+        sequence = if(sequence.isNotBlank()){
+            "$sequence, ${buttonTexts[index]}"
+        } else buttonTexts[index]
+    }
+
     // azione del tasto "Cancella", elimina la sequenza digitata
-    // funzione passata come parametro al composable che realizza il tasto "Cancella"
+    // funzione passata come parametro al composable ButtonArea che contiene il button "Cancella"
     val deleteAction : () -> Unit = {
         sequence = ""
     }
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
     // poi lancia un intent verso Activity2 passando come dato la lista di sequenze giocate
-    // funzione passata come parametro al composable che realizza il tasto "Fine Partita"
+    // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
     val endGameAction : () -> Unit = {
         gamesHistory += sequence
         sequence = ""
@@ -126,7 +135,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
                 // fornisco l'indice del button e il target da modificare (la sequenza digitata)
                 // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
                 // passata come parametro con la lettera corrispondente al button di indice passato
-                buttonAction = { index -> sequence = coloredButtonAction(index, sequence) }
+                buttonAction = { index -> coloredButtonAction(index) }
             )
             }
             Column(
@@ -165,7 +174,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
                 // fornisco l'indice del button e il target da modificare (la sequenza digitata)
                 // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
                 // passata come parametro con la lettera corrispondente al button di indice passato
-                buttonAction = { index -> sequence = coloredButtonAction(index, sequence) }
+                buttonAction = { index -> coloredButtonAction(index) }
             )
 
             // area di testo multiriga non editabile
@@ -206,9 +215,7 @@ fun ColoredMatrix(
                     modifier = modifier.fillMaxHeight(),
                     colors = ButtonDefaults.buttonColors(buttonColors[index]),
                     shape = RectangleShape
-                ) {
-                    //Text(text = buttonTexts[index])
-                }
+                ) {}
                 index++
             }
         }
@@ -217,8 +224,8 @@ fun ColoredMatrix(
 
 @Composable
 fun TextArea(
-    text : String,
-    modifier : Modifier
+    modifier : Modifier,
+    text : String
 ){
     Row(
         modifier = modifier,
@@ -270,13 +277,4 @@ fun ButtonArea(
             Text(text = stringResource(R.string.end_game))
         }
     }
-}
-
-// azione eseguita da ogni button colorato alla pressione
-fun coloredButtonAction(index : Int, text : String) : String{
-    val t = if(text.isNotBlank()){
-        "$text, ${buttonTexts[index]}"
-    }
-    else buttonTexts[index]
-    return t
 }
