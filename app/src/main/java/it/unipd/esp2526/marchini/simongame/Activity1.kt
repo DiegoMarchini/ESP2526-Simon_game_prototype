@@ -97,9 +97,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
 
     // azione del tasto "Cancella", elimina la sequenza digitata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Cancella"
-    val deleteAction : () -> Unit = {
-        sequence = ""
-    }
+    val deleteAction : () -> Unit = { sequence = "" }
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
     // poi lancia un intent verso Activity2 passando come dato la lista di sequenze giocate
@@ -131,10 +129,6 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
-                // azione dei button colorati
-                // fornisco l'indice del button e il target da modificare (la sequenza digitata)
-                // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
-                // passata come parametro con la lettera corrispondente al button di indice passato
                 buttonAction = { index -> coloredButtonAction(index) }
             )
             }
@@ -170,10 +164,6 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
-                // azione dei button colorati
-                // fornisco l'indice del button e il target da modificare (la sequenza digitata)
-                // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
-                // passata come parametro con la lettera corrispondente al button di indice passato
                 buttonAction = { index -> coloredButtonAction(index) }
             )
 
@@ -193,10 +183,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     }
 }
 
+// matrice 3x2 di button colorati
 @Composable
 fun ColoredMatrix(
-                  modifier : Modifier,
-                  buttonAction : (Int) -> Unit
+        modifier : Modifier,
+        buttonAction : (Int) -> Unit
 ){
     var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
 
@@ -222,10 +213,11 @@ fun ColoredMatrix(
     }
 }
 
+// area di testo multiriga non editabile
 @Composable
 fun TextArea(
-    modifier : Modifier,
-    text : String
+        modifier : Modifier,
+        text : String
 ){
     Row(
         modifier = modifier,
@@ -250,11 +242,12 @@ fun TextArea(
     }
 }
 
+// area dei button "Cancella" e "Fine Partita"
 @Composable
 fun ButtonArea(
-    modifier : Modifier,
-    deleteAction : () -> Unit,
-    endGameAction : () -> Unit
+        modifier : Modifier,
+        deleteAction : () -> Unit,
+        endGameAction : () -> Unit
 ){
     Row(
         modifier = modifier,

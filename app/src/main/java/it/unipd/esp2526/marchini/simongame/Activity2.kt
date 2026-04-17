@@ -44,6 +44,7 @@ class Activity2 : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // catturo lo storico delle partite (passato dall'Activity1 via intent come array di stringhe)
         val gamesHistory = intent.getStringArrayListExtra("GAMES_HISTORY") ?: arrayListOf()
 
         setContent {
@@ -64,54 +65,67 @@ class Activity2 : ComponentActivity() {
 @Composable
 fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
 
-        Column(
-            modifier = modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            GamesList(modifier, gamesHistory)
+    // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
+    val orientation = LocalConfiguration.current.orientation
+
+    // modifico la porzione di schermo occupata dal titolo della lista a seconda della modalità
+    val titleBox = if(orientation == Configuration.ORIENTATION_LANDSCAPE) 0.3f
+    else 0.1f
+
+    Column(
+        modifier = modifier.padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ){
+        // box contenente il titolo "Storico Partite"
+        Box(
+            modifier = Modifier
+                .fillMaxHeight(titleBox)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.DarkGray),
+            contentAlignment = Alignment.Center
+        ){
+            Text(
+                modifier = modifier,
+                textAlign = Center,
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Black,
+                text = stringResource(R.string.games_history)
+            )
         }
 
+        GamesList(modifier, gamesHistory)
+    }
 }
 
 @Composable
 fun GamesList(modifier: Modifier = Modifier, games : List<String>){
 
-    val orientation = LocalConfiguration.current.orientation
-
-    val titleBox = if(orientation == Configuration.ORIENTATION_LANDSCAPE) 0.3f
-    else 0.1f
-
-    Box(
-        modifier = Modifier
-            .fillMaxHeight(titleBox)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.DarkGray),
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            modifier = modifier,
-            textAlign = Center,
-            color = Color.White,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Black,
-            text = stringResource(R.string.games_history)
-        )
-    }
-
+    // lista dinamica delle partite (sequenze digitate), in alto si trovano le sequenze delle partite più recenti
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(12.dp, 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ){
+        // gli oggetti della lista di sequenze sono invertiti in ordine (in alto la sequenza più recente)
         items(games.reversed()){
             game -> GameStatsRow(game)
         }
     }
 }
 
+// riga nella LazyColumn rappresentante una partita
 @Composable
 fun GameStatsRow(game : String){
+
+    // estraggo dalla sequenza di una partita il numero di rettangoli colorati premuti
+    val sequenceLength = if(game.isNotBlank()){
+        (game.count { it == ' ' } + 1).toString()
+    }
+    else "0"
+
+    // riga dedicata ad una partita, contiene numero di rettangoli colorati premuti e sequenza (opportunamente spaziati)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,30 +133,25 @@ fun GameStatsRow(game : String){
             .background(Color.Gray, RoundedCornerShape(20)),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
-    )
-    {
-
+    ){
         Spacer(modifier = Modifier.weight(0.05f))
 
+        // numero di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.1f),
-            text = if(game.isNotBlank()){
-                (game.count { it == ' ' } + 1).toString()
-            }
-            else "0",
+            text = sequenceLength,
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Bold
         )
-
         Spacer(modifier = Modifier.weight(0.1f))
 
+        // sequenza di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.7f),
             text = game,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-
         Spacer(modifier = Modifier.weight(0.05f))
     }
 }
