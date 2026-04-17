@@ -76,38 +76,42 @@ val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Unit) {
 
-    // catturo l'orientation
+    // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val orientation = LocalConfiguration.current.orientation
 
-    // stato dell'activity1 : il testo multiriga non editabile
+    // stato di Activity1 : la sequenza contenuta nell'area di testo multiriga non editabile
     var sequence by rememberSaveable { mutableStateOf("")}
 
-    // stato dell'activity1 : il numero di button premuti
-    // var count  by rememberSaveable { mutableIntStateOf(0) }
+    // stato di Activity1 : la lista di sequenze giocate
+    // questa lista viene passsata con un intent ad Activity2 per poi visualizzare lo storico delle partite
+    var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
 
-    var gamesHistory by rememberSaveable{ mutableStateOf(listOf<String>())}
-
+    // azione del tasto "Cancella", elimina la sequenza digitata
+    // funzione passata come parametro al composable che realizza il tasto "Cancella"
     val deleteAction : () -> Unit = {
         sequence = ""
-        //count = 0
     }
 
+    // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
+    // poi lancia un intent verso Activity2 passando come dato la lista di sequenze giocate
+    // funzione passata come parametro al composable che realizza il tasto "Fine Partita"
     val endGameAction : () -> Unit = {
         gamesHistory += sequence
         sequence = ""
         buttonAction(gamesHistory)
     }
 
-    // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row, column, ecc)
+    // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row e column)
     // piuttosto che l'imposizione di vincoli tra oggetti
 
-    // layout se mi trovo in modalità landscape
+    // LAYOUT in modalità LANDSCAPE : nella colonna di sx il composable ColoredMatrix,
+    // nella colonna di dx i composable TextArea e ButtonArea
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
         Row(
             modifier = modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        ){
             Column(
                 modifier = Modifier.padding(12.dp)
                     .weight(1f),
@@ -118,12 +122,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
-
                 // azione dei button colorati
-                buttonAction = {
-                        index -> sequence = coloredButtonAction(index, sequence)
-                        //count++
-                }
+                // fornisco l'indice del button e il target da modificare (la sequenza digitata)
+                // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
+                // passata come parametro con la lettera corrispondente al button di indice passato
+                buttonAction = { index -> sequence = coloredButtonAction(index, sequence) }
             )
             }
             Column(
@@ -134,25 +137,21 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             ){
                 // area di testo multiriga non editabile
                 TextArea(
-                    text = sequence,
                     modifier = Modifier.weight(1f),
+                    text = sequence
                 )
 
                 // area dei button "Cancella" e "Fine Partita"
                 ButtonArea(
                     modifier = Modifier.weight(1f),
-
-                    // azione del button "Cancella"
-                    deleteAction = deleteAction,
-
-                    // azione del button "Fine Partita"
-                    endGameAction = endGameAction
+                    deleteAction = deleteAction, // azione del button "Cancella"
+                    endGameAction = endGameAction // azione del button "Fine Partita"
                 )
             }
         }
     }
 
-    // layout se mi trovo in modalità portrait
+    // LAYOUT in modalità PORTRAIT : i 3 composable ColoredMatrix, TextArea e ButtonArea in colonna
     else{
         Column(
             modifier = modifier.padding(12.dp),
@@ -162,29 +161,24 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
-
                 // azione dei button colorati
-                buttonAction = {
-                    index -> sequence = coloredButtonAction(index, sequence)
-                    //count++
-                }
+                // fornisco l'indice del button e il target da modificare (la sequenza digitata)
+                // la funzione coloredButtonAction (implementata fuori dai composable) aggiorna la stringa
+                // passata come parametro con la lettera corrispondente al button di indice passato
+                buttonAction = { index -> sequence = coloredButtonAction(index, sequence) }
             )
 
             // area di testo multiriga non editabile
             TextArea(
-                text = sequence,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                text = sequence
             )
 
             // area dei button "Cancella" e "Fine Partita"
             ButtonArea(
                 modifier = Modifier.weight(1f),
-
-                // azione del button "Cancella"
-                deleteAction = deleteAction,
-
-                // azione del button "Fine Partita"
-                endGameAction = endGameAction
+                deleteAction = deleteAction, // azione del button "Cancella"
+                endGameAction = endGameAction // azione del button "Fine Partita"
             )
         }
     }
@@ -204,7 +198,7 @@ fun ColoredMatrix(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ){
-            // creazione dei bottoni
+            // creazione dei 2 button per ciascun riga
             repeat(2){
                 val i = index // fisso il valore assunto da index in questa iterazione
                 Button(
@@ -213,7 +207,7 @@ fun ColoredMatrix(
                     colors = ButtonDefaults.buttonColors(buttonColors[index]),
                     shape = RectangleShape
                 ) {
-                    Text(text = buttonTexts[index])
+                    //Text(text = buttonTexts[index])
                 }
                 index++
             }
@@ -226,12 +220,11 @@ fun TextArea(
     text : String,
     modifier : Modifier
 ){
-    Row( // riga 4
+    Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // testo multiriga non editabile
         Box(
             modifier = Modifier
                 .fillMaxSize()
