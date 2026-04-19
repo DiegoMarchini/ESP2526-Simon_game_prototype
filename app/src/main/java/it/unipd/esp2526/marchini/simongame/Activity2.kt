@@ -93,7 +93,7 @@ fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
             contentAlignment = Alignment.Center
         ){
             Text(
-                modifier = modifier,
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = Center,
                 color = Color.White,
                 fontSize = 24.sp,

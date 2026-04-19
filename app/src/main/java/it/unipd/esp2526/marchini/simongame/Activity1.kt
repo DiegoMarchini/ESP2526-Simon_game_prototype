@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -254,7 +253,7 @@ fun ButtonArea(
         // button "Cancella"
         Button(
             onClick =  deleteAction,
-            modifier = modifier.fillMaxHeight().padding(24.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
         ) {
             Text(
                 text = stringResource(R.string.delete),
@@ -266,7 +265,7 @@ fun ButtonArea(
         // button "Fine Partita"
         Button(
             onClick =  endGameAction,
-            modifier = modifier.fillMaxHeight().padding(24.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
         ) {
             Text(
                 text = stringResource(R.string.end_game),
