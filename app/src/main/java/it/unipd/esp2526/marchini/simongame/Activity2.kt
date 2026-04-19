@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,11 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
@@ -68,12 +66,21 @@ fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
     // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val orientation = LocalConfiguration.current.orientation
 
-    // modifico la porzione di schermo occupata dal titolo della lista a seconda della modalità
-    val titleBox = if(orientation == Configuration.ORIENTATION_LANDSCAPE) 0.3f
-    else 0.1f
+    // modifico la porzione di schermo occupata dal titolo e la dimensione del padding laterale
+    // della lista a seconda della modalità
+    val titleBox : Float
+    val lateralPadding : Dp
+    if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        titleBox = 0.3f
+        lateralPadding = 16.dp
+    }
+    else {
+        titleBox = 0.1f
+        lateralPadding = 12.dp
+    }
 
     Column(
-        modifier = modifier.padding(12.dp),
+        modifier = modifier.padding(vertical = 12.dp, horizontal = lateralPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ){
@@ -95,12 +102,12 @@ fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
             )
         }
 
-        GamesList(modifier, gamesHistory)
+        GamesList(gamesHistory)
     }
 }
 
 @Composable
-fun GamesList(modifier: Modifier = Modifier, games : List<String>){
+fun GamesList(games : List<String>){
 
     // lista dinamica delle partite (sequenze digitate), in alto si trovano le sequenze delle partite più recenti
     LazyColumn(
@@ -134,16 +141,17 @@ fun GameStatsRow(game : String){
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Spacer(modifier = Modifier.weight(0.05f))
+        Spacer(modifier = Modifier.weight(0.01f))
 
         // numero di rettangoli colorati premuti in una partita
         Text(
-            modifier = Modifier.weight(0.1f),
+            modifier = Modifier.weight(0.15f),
             text = sequenceLength,
+            textAlign = Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.weight(0.1f))
+        Spacer(modifier = Modifier.weight(0.09f))
 
         // sequenza di rettangoli colorati premuti in una partita
         Text(

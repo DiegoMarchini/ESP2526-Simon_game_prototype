@@ -1,6 +1,5 @@
 package it.unipd.esp2526.marchini.simongame
 
-import android.R.attr.orientation
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -14,22 +13,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.R
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -120,7 +112,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ){
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 8.dp)
                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -133,7 +125,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             )
             }
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp)
                                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -169,7 +161,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
 
             // area di testo multiriga non editabile
             TextArea(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).padding(top = 8.dp),
                 text = sequence
             )
 
@@ -228,7 +220,8 @@ fun TextArea(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color.LightGray),
+                .background(Color.LightGray)
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ){
             Text(
