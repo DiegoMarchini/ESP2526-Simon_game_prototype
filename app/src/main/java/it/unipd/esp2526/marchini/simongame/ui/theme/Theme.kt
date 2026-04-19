@@ -35,7 +35,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun SimonGameTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    //darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true, // forzo il tema scuro
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,9 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
 
@@ -188,7 +191,7 @@ fun ColoredMatrix(
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ){
             // creazione dei 2 button per ciascun riga
             repeat(2){
@@ -197,7 +200,8 @@ fun ColoredMatrix(
                     onClick = { buttonAction(i) },
                     modifier = modifier.fillMaxHeight(),
                     colors = ButtonDefaults.buttonColors(buttonColors[index]),
-                    shape = RectangleShape
+                    shape = RectangleShape,
+                    border = BorderStroke(2.dp, Color.DarkGray)
                 ) {}
                 index++
             }
@@ -252,7 +256,11 @@ fun ButtonArea(
             onClick =  deleteAction,
             modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
-            Text(text = stringResource(R.string.delete))
+            Text(
+                text = stringResource(R.string.delete),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         // button "Fine Partita"
@@ -260,7 +268,11 @@ fun ButtonArea(
             onClick =  endGameAction,
             modifier = modifier.fillMaxHeight().padding(24.dp)
         ) {
-            Text(text = stringResource(R.string.end_game))
+            Text(
+                text = stringResource(R.string.end_game),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
