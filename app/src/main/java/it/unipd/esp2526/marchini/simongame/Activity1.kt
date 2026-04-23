@@ -38,7 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
-
+// activity della prima schermata, contente
+// matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
 class Activity1 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +55,8 @@ class Activity1 : ComponentActivity() {
                         // azione che passo per generare l'intent alla pressione del button "Fine Partita"
                         buttonAction = { gamesHistory ->
                             val intent = Intent(this, Activity2::class.java)
+
+                            // passo la lista delle partite terminate (gamesHistory) alla seconda activity via intent
                             intent.putStringArrayListExtra("GAMES_HISTORY",ArrayList(gamesHistory))
                             startActivity(intent)
 
@@ -65,6 +68,7 @@ class Activity1 : ComponentActivity() {
     }
 }
 
+// lista di colori e lettere associate ai button della matrice 3x2
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
 val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 @Composable
@@ -196,6 +200,7 @@ fun ColoredMatrix(
             repeat(2){
                 val i = index // fisso il valore assunto da index in questa iterazione
                 Button(
+                    // azione passata come parametro a ColoredMatrix (vedere la definizione di coloredButtonAction in ScreenOne)
                     onClick = { buttonAction(i) },
                     modifier = modifier.fillMaxHeight(),
                     colors = ButtonDefaults.buttonColors(buttonColors[index]),

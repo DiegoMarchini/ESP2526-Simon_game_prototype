@@ -101,7 +101,7 @@ fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
                 text = stringResource(R.string.games_history)
             )
         }
-
+        // lista dinamica popolata dalle sequenze giocate
         GamesList(gamesHistory)
     }
 }
