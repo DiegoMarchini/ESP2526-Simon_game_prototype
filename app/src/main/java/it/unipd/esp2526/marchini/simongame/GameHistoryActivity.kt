@@ -37,12 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
-class Activity2 : ComponentActivity() {
+class GameHistoryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // catturo lo storico delle partite (passato dall'Activity1 via intent come array di stringhe)
+        // catturo lo storico delle partite (passato da GameActivity via intent come array di stringhe)
         val gamesHistory = intent.getStringArrayListExtra("GAMES_HISTORY") ?: arrayListOf()
 
         setContent {

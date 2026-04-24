@@ -40,7 +40,7 @@ import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
 // activity della prima schermata, contente
 // matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
-class Activity1 : ComponentActivity() {
+class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -54,9 +54,9 @@ class Activity1 : ComponentActivity() {
 
                         // azione che passo per generare l'intent alla pressione del button "Fine Partita"
                         buttonAction = { gamesHistory ->
-                            val intent = Intent(this, Activity2::class.java)
+                            val intent = Intent(this, GameHistoryActivity::class.java)
 
-                            // passo la lista delle partite terminate (gamesHistory) alla seconda activity via intent
+                            // passo la lista delle partite terminate (gamesHistory) all'activity GameHistoryActivity via intent
                             intent.putStringArrayListExtra("GAMES_HISTORY",ArrayList(gamesHistory))
                             startActivity(intent)
 
@@ -77,11 +77,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val orientation = LocalConfiguration.current.orientation
 
-    // stato di Activity1 : la sequenza contenuta nell'area di testo multiriga non editabile
+    // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
     var sequence by rememberSaveable { mutableStateOf("")}
 
-    // stato di Activity1 : la lista di sequenze giocate
-    // questa lista viene passsata con un intent ad Activity2 per poi visualizzare lo storico delle partite
+    // stato di GameActivity : la lista di sequenze giocate
+    // questa lista viene passsata con un intent a GameHistoryActivity per poi visualizzare lo storico delle partite
     var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
@@ -98,7 +98,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     val deleteAction : () -> Unit = { sequence = "" }
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
-    // poi lancia un intent verso Activity2 passando come dato la lista di sequenze giocate
+    // poi lancia un intent verso GameHistoryActivity passando come dato la lista di sequenze giocate
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
     val endGameAction : () -> Unit = {
         gamesHistory += sequence
