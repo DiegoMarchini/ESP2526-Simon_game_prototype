@@ -81,7 +81,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     var sequence by rememberSaveable { mutableStateOf("")}
 
     // stato di GameActivity : la lista di sequenze giocate
-    // questa lista viene passsata con un intent a GameHistoryActivity per poi visualizzare lo storico delle partite
+    // questa lista viene passata con un intent a GameHistoryActivity per poi visualizzare lo storico delle partite
     var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto

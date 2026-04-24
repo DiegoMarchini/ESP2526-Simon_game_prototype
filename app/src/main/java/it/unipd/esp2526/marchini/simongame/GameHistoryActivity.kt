@@ -126,7 +126,7 @@ fun GamesList(games : List<String>){
 @Composable
 fun GameStatsRow(game : String){
 
-    // estraggo dalla sequenza di una partita il numero di rettangoli colorati premuti
+    // calcolo dalla sequenza di una partita il numero di rettangoli colorati premuti
     val sequenceLength = if(game.isNotBlank()){
         (game.count { it == ' ' } + 1).toString()
     }

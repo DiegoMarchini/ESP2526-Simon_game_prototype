@@ -11,17 +11,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SimonGame">
+
+        <!--
+        activity della Schermata 1, il gioco con la matrice colorata.
+        L'applicazione parte lanciando GameActivity.
+        -->
         <activity
             android:name=".GameActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.SimonGame">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GameHistoryActivity"/>
+
+        <!--
+        activity della Schermata 2, la lista delle partite giocate.
+        GameHistoryActivity viene chiamata via intent alla pressione del tasto "Fine Partita" (dalla Schermata 1).
+         -->
+        <activity
+            android:name=".GameHistoryActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SimonGame" />
     </application>
 
 </manifest>
