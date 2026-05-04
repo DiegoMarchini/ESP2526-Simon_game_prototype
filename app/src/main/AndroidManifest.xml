@@ -13,11 +13,11 @@
         android:theme="@style/Theme.SimonGame">
 
         <!--
-        activity della Schermata 1, il gioco con la matrice colorata.
-        L'applicazione parte lanciando GameActivity.
-        -->
+        activity della lista delle partite giocate.
+        L'applicazione parte lanciando GameHistoryActivity.
+         -->
         <activity
-            android:name=".GameActivity"
+            android:name=".GameHistoryActivity"
             android:exported="true"
             android:theme="@style/Theme.SimonGame">
             <intent-filter>
@@ -27,11 +27,10 @@
         </activity>
 
         <!--
-        activity della Schermata 2, la lista delle partite giocate.
-        GameHistoryActivity viene chiamata via intent alla pressione del tasto "Fine Partita" (dalla Schermata 1).
+        activity del gioco con la matrice colorata.
          -->
         <activity
-            android:name=".GameHistoryActivity"
+            android:name=".GameActivity"
             android:exported="true"
             android:theme="@style/Theme.SimonGame" />
     </application>
