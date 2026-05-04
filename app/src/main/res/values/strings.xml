@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Simon Game</string>
-    <string name="delete">Delete</string>
+    <string name="start_game">Start Game</string>
+    <string name="pause_game">Pause</string>
+    <string name="resume_game">Resume</string>
     <string name="end_game">End Game</string>
     <string name="games_history">Games History</string>
     <string name="new_game">New Game</string>

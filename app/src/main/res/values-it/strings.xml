@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="delete">Cancella</string>
+    <string name="start_game">Avvia Partita</string>
+    <string name="pause_game">Pausa</string>
+    <string name="resume_game">Riprendi</string>
     <string name="end_game">Fine Partita</string>
     <string name="games_history">Storico Partite</string>
     <string name="new_game">Nuova Partita</string>
