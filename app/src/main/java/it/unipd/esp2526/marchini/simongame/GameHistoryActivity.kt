@@ -1,5 +1,6 @@
 package it.unipd.esp2526.marchini.simongame
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -56,8 +57,11 @@ class GameHistoryActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
-                        onClick = { },
-                        icon = { Icon(Icons.Filled.Games, getString(R.string.new_game)) },
+                        onClick = {
+                            val intent = Intent(this, GameActivity::class.java)
+                            startActivity(intent)
+                        },
+                        icon = { Icon(Icons.Filled.Games, getString(R.string.new_game))},
                         text = { Text(getString(R.string.new_game))})
                     }
                 ) { innerPadding ->

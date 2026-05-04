@@ -84,6 +84,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
     // questa lista viene passata con un intent a GameHistoryActivity per poi visualizzare lo storico delle partite
     var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
 
+
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
     // e aggiunge la lettera corrispondente al colore del tasto premuto nella sequenza
     // funzione passata come parametro al composable ColoredMatrix contenente i button colorati
@@ -93,9 +94,11 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
         } else buttonTexts[index]
     }
 
-    // azione del tasto "Cancella", elimina la sequenza digitata
-    // funzione passata come parametro al composable ButtonArea che contiene il button "Cancella"
-    val deleteAction : () -> Unit = { sequence = "" }
+    // azione del tasto "Avvia Partita", non fa niente
+    // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
+    val startGameAction : () -> Unit = {}
+
+    val pauseGameAction : () -> Unit = {}
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
     // poi lancia un intent verso GameHistoryActivity passando come dato la lista di sequenze giocate
@@ -145,7 +148,8 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
                 // area dei button "Cancella" e "Fine Partita"
                 ButtonArea(
                     modifier = Modifier.weight(1f),
-                    deleteAction = deleteAction, // azione del button "Cancella"
+                    startGameAction = startGameAction, // azione del button "Cancella"
+                    pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
                     endGameAction = endGameAction // azione del button "Fine Partita"
                 )
             }
@@ -174,7 +178,8 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
             // area dei button "Cancella" e "Fine Partita"
             ButtonArea(
                 modifier = Modifier.weight(1f),
-                deleteAction = deleteAction, // azione del button "Cancella"
+                startGameAction = startGameAction, // azione del button "Avvia Partita"
+                pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
                 endGameAction = endGameAction // azione del button "Fine Partita"
             )
         }
@@ -247,22 +252,42 @@ fun TextArea(
 @Composable
 fun ButtonArea(
         modifier : Modifier,
-        deleteAction : () -> Unit,
+        startGameAction : () -> Unit,
+        pauseGameAction : () -> Unit,
         endGameAction : () -> Unit
 ){
+    var hasStarted by rememberSaveable{ mutableStateOf(false)}
+    var isRunning by rememberSaveable{ mutableStateOf(false)}
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // button "Cancella"
+        // button "Avvia Partita"
         Button(
-            onClick =  deleteAction,
+            onClick = startGameAction,
+            enabled = !hasStarted,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
         ) {
             Text(
-                text = stringResource(R.string.delete),
-                fontSize = 16.sp,
+                text = stringResource(R.string.start_game),
+                fontSize = 12.sp,
+                textAlign = Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // button "Pausa"
+        Button(
+            onClick =  pauseGameAction,
+            enabled = isRunning,
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
+        ) {
+            Text(
+                text = if(isRunning){stringResource(R.string.pause_game)}
+                       else (stringResource(R.string.resume_game)),
+                fontSize = 12.sp,
+                textAlign = Center,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -274,7 +299,8 @@ fun ButtonArea(
         ) {
             Text(
                 text = stringResource(R.string.end_game),
-                fontSize = 16.sp,
+                fontSize = 12.sp,
+                textAlign = Center,
                 fontWeight = FontWeight.Bold
             )
         }
