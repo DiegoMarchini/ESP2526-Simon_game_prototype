@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
@@ -265,13 +267,16 @@ fun ButtonArea(
     ) {
         // button "Avvia Partita"
         Button(
-            onClick = startGameAction,
+            onClick = {
+                startGameAction
+                hasStarted = true
+                isRunning = true },
             enabled = !hasStarted,
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
                 text = stringResource(R.string.start_game),
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 textAlign = Center,
                 fontWeight = FontWeight.Bold
             )
@@ -279,27 +284,35 @@ fun ButtonArea(
 
         // button "Pausa"
         Button(
-            onClick =  pauseGameAction,
-            enabled = isRunning,
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
+            onClick =  {
+                isRunning = !isRunning
+                pauseGameAction
+            },
+            enabled = hasStarted,
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
-                text = if(isRunning){stringResource(R.string.pause_game)}
-                       else (stringResource(R.string.resume_game)),
-                fontSize = 12.sp,
+                text = if(hasStarted){
+                    if(isRunning){stringResource(R.string.pause_game)}
+                    else (stringResource(R.string.resume_game))}
+                    else "-",
+                fontSize = 16.sp,
                 textAlign = Center,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                softWrap = false,
+                maxLines = 1,
+                overflow = TextOverflow.Visible
             )
         }
 
         // button "Fine Partita"
         Button(
             onClick =  endGameAction,
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 12.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
                 text = stringResource(R.string.end_game),
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 textAlign = Center,
                 fontWeight = FontWeight.Bold
             )
