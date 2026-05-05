@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
@@ -143,6 +144,7 @@ fun GamesList(games : List<String>){
 @Composable
 fun GameStatsRow(game : String){
 
+    val context = LocalContext.current
     // calcolo dalla sequenza di una partita il numero di rettangoli colorati premuti
     val sequenceLength = if(game.isNotBlank()){
         (game.count { it == ' ' } + 1).toString()
@@ -154,7 +156,13 @@ fun GameStatsRow(game : String){
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.Gray, RoundedCornerShape(20)),
+            .background(Color.Gray, RoundedCornerShape(20))
+            .clickable{
+                val intent = Intent(context, DetailActivity::class.java)
+                intent.putExtra("LENGTH", sequenceLength)
+                intent.putExtra("SEQUENCE", game)
+                context.startActivity(intent)
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
