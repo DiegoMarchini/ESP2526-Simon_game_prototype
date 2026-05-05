@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -290,7 +289,7 @@ fun ButtonArea(
                 isRunning = !isRunning
                 pauseGameAction },
             enabled = hasStarted,
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
             Text(
                 text = if(hasStarted){
