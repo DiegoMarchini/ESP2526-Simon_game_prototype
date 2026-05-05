@@ -258,7 +258,9 @@ fun ButtonArea(
         pauseGameAction : () -> Unit,
         endGameAction : () -> Unit
 ){
+    // variabile di stato che identifica se la partita è stata avviata
     var hasStarted by rememberSaveable{ mutableStateOf(false)}
+    // variabile di stato che identifica se la partita sta procedendo o è statta messa in pausa
     var isRunning by rememberSaveable{ mutableStateOf(false)}
     Row(
         modifier = modifier,
@@ -268,9 +270,9 @@ fun ButtonArea(
         // button "Avvia Partita"
         Button(
             onClick = {
-                startGameAction
                 hasStarted = true
-                isRunning = true },
+                isRunning = true
+                startGameAction },
             enabled = !hasStarted,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
@@ -286,8 +288,7 @@ fun ButtonArea(
         Button(
             onClick =  {
                 isRunning = !isRunning
-                pauseGameAction
-            },
+                pauseGameAction },
             enabled = hasStarted,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
@@ -307,7 +308,8 @@ fun ButtonArea(
 
         // button "Fine Partita"
         Button(
-            onClick =  endGameAction,
+            onClick = endGameAction,
+            enabled = hasStarted,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
