@@ -13,21 +13,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.sp
+import it.unipd.esp2526.marchini.simongame.data.AppDatabase
+import it.unipd.esp2526.marchini.simongame.data.GameDao
+import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
+import androidx.compose.runtime.setValue
+
+private lateinit var dao : GameDao
 
 class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val sequenceLength = intent.getCharSequenceExtra("LENGTH") ?: String
-        val sequence = intent.getCharSequenceExtra("SEQUENCE") ?: String
+        dao = AppDatabase.getDatabase(applicationContext).gameDao()
+        val gameId = intent.getIntExtra("GAME_ID", -1)
 
         setContent {
             SimonGameTheme {
@@ -37,8 +47,7 @@ class DetailActivity : ComponentActivity() {
                             .fillMaxSize()
                             .background(Color.DarkGray)
                             .padding(innerPadding),
-                        sequenceLength = sequenceLength.toString(),
-                        sequence = sequence.toString()
+                        gameId = gameId
                     )
                 }
             }
@@ -47,7 +56,12 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreenThree(modifier : Modifier = Modifier, sequenceLength : String, sequence : String){
+fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
+
+    var game by remember{mutableStateOf(GameEntity(id = gameId, sequence = "", errorIndex = 0))}
+
+    LaunchedEffect(gameId) { game = dao.getGameByID(gameId) }
+
     Row(
         modifier = modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
@@ -58,7 +72,7 @@ fun ScreenThree(modifier : Modifier = Modifier, sequenceLength : String, sequenc
         // numero di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.15f),
-            text = sequenceLength,
+            text = game.errorIndex.toString(),
             textAlign = Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
@@ -68,7 +82,7 @@ fun ScreenThree(modifier : Modifier = Modifier, sequenceLength : String, sequenc
         // sequenza di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.7f),
-            text = sequence,
+            text = game.sequence,
         )
         Spacer(modifier = Modifier.weight(0.05f))
     }

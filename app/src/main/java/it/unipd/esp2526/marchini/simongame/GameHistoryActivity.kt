@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,16 +44,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import it.unipd.esp2526.marchini.simongame.data.AppDatabase
+import it.unipd.esp2526.marchini.simongame.data.GameDao
+import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 
+private lateinit var dao : GameDao
 class GameHistoryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        // catturo lo storico delle partite (passato da GameActivity via intent come array di stringhe)
-        val gamesHistory = intent.getStringArrayListExtra("GAMES_HISTORY") ?: arrayListOf()
-
+        dao = AppDatabase.getDatabase(applicationContext).gameDao()
         setContent {
             SimonGameTheme {
                 Scaffold(
@@ -66,12 +69,7 @@ class GameHistoryActivity : ComponentActivity() {
                         text = { Text(getString(R.string.new_game))})
                     }
                 ) { innerPadding ->
-                    ScreenTwo(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        gamesHistory = gamesHistory
-                    )
+                    ScreenTwo(modifier = Modifier.fillMaxSize().padding(innerPadding))
                 }
             }
         }
@@ -79,7 +77,7 @@ class GameHistoryActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
+fun ScreenTwo(modifier: Modifier = Modifier){
 
     // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val orientation = LocalConfiguration.current.orientation
@@ -120,12 +118,14 @@ fun ScreenTwo(modifier: Modifier = Modifier, gamesHistory : List<String>){
             )
         }
         // lista dinamica popolata dalle sequenze giocate
-        GamesList(gamesHistory)
+        GamesList()
     }
 }
 
 @Composable
-fun GamesList(games : List<String>){
+fun GamesList(){
+
+    val games by dao.getAllGames().collectAsState(initial = emptyList())
 
     // lista dinamica delle partite (sequenze digitate), in alto si trovano le sequenze delle partite più recenti
     LazyColumn(
@@ -133,23 +133,18 @@ fun GamesList(games : List<String>){
         contentPadding = PaddingValues(12.dp, 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ){
-        // gli oggetti della lista di sequenze sono invertiti in ordine (in alto la sequenza più recente)
+        // gli oggetti della lista di sequenze
         items(games.reversed()){
-            game -> GameStatsRow(game)
+            gameEntity -> GameStatsRow(gameEntity)
         }
     }
 }
 
 // riga nella LazyColumn rappresentante una partita
 @Composable
-fun GameStatsRow(game : String){
+fun GameStatsRow(game : GameEntity){
 
     val context = LocalContext.current
-    // calcolo dalla sequenza di una partita il numero di rettangoli colorati premuti
-    val sequenceLength = if(game.isNotBlank()){
-        (game.count { it == ' ' } + 1).toString()
-    }
-    else "0"
 
     // riga dedicata ad una partita, contiene numero di rettangoli colorati premuti e sequenza (opportunamente spaziati)
     Row(
@@ -159,8 +154,7 @@ fun GameStatsRow(game : String){
             .background(Color.Gray, RoundedCornerShape(20))
             .clickable{
                 val intent = Intent(context, DetailActivity::class.java)
-                intent.putExtra("LENGTH", sequenceLength)
-                intent.putExtra("SEQUENCE", game)
+                intent.putExtra("GAME_ID", game.id)
                 context.startActivity(intent)
             },
         verticalAlignment = Alignment.CenterVertically,
@@ -171,7 +165,7 @@ fun GameStatsRow(game : String){
         // numero di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.15f),
-            text = sequenceLength,
+            text = game.errorIndex.toString(),
             textAlign = Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
@@ -181,7 +175,7 @@ fun GameStatsRow(game : String){
         // sequenza di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.7f),
-            text = game,
+            text = game.sequence,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
