@@ -4,14 +4,15 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "games")
 data class GameEntity (
+
     @PrimaryKey(autoGenerate = true)
-    val id : Int,
+    val id : Int = 0,
 
     @ColumnInfo(name = "sequence")
     val sequence : String?,
 
-    @ColumnInfo(name = "error")
-    val error : String?,
+    @ColumnInfo(name = "error_index")
+    val errorIndex : Int?,
 )
