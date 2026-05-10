@@ -11,8 +11,8 @@ data class GameEntity (
     val id : Int = 0,
 
     @ColumnInfo(name = "sequence")
-    val sequence : String?,
+    val sequence : String,
 
     @ColumnInfo(name = "error_index")
-    val errorIndex : Int?,
+    val errorIndex : Int,
 )
