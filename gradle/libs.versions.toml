@@ -10,6 +10,7 @@ kotlin = "2.3.21"
 composeBom = "2024.09.00"
 foundation = "1.10.6"
 roomCompiler = "2.8.4"
+roomKtx = "2.8.4"
 roomRuntimeVersion = "2.8.4"
 ksp = "2.3.7"
 
@@ -17,6 +18,7 @@ ksp = "2.3.7"
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntimeVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
