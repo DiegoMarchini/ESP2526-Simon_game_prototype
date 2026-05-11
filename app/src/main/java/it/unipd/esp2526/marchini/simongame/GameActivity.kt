@@ -1,9 +1,9 @@
 package it.unipd.esp2526.marchini.simongame
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
@@ -22,7 +22,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,7 +39,17 @@ import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import it.unipd.esp2526.marchini.simongame.data.AppDatabase
+import it.unipd.esp2526.marchini.simongame.data.GameDao
+import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
+
+private lateinit var dao : GameDao
+
+// lista di colori e lettere associate ai button della matrice 3x2
+val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
+val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 
 // activity della prima schermata, contente
 // matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
@@ -45,46 +57,29 @@ class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        dao = AppDatabase.getDatabase(applicationContext).gameDao()
         setContent {
             SimonGameTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ScreenOne(
                         modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
-
-                        // azione che passo per generare l'intent alla pressione del button "Fine Partita"
-                        buttonAction = { gamesHistory ->
-                            val intent = Intent(this, GameHistoryActivity::class.java)
-
-                            // passo la lista delle partite terminate (gamesHistory) all'activity GameHistoryActivity via intent
-                            intent.putStringArrayListExtra("GAMES_HISTORY",ArrayList(gamesHistory))
-                            startActivity(intent)
-
-                        }
-                        )
+                        .padding(innerPadding)
+                    )
                 }
             }
         }
     }
 }
 
-// lista di colori e lettere associate ai button della matrice 3x2
-val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
-val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 @Composable
-fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Unit) {
+fun ScreenOne(modifier: Modifier = Modifier) {
 
-    // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
-    val orientation = LocalConfiguration.current.orientation
-
-    // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
-    var sequence by rememberSaveable { mutableStateOf("")}
-
-    // stato di GameActivity : la lista di sequenze giocate
-    // questa lista viene passata con un intent a GameHistoryActivity per poi visualizzare lo storico delle partite
-    var gamesHistory by rememberSaveable { mutableStateOf(listOf<String>())}
-
+    var sequence by rememberSaveable { mutableStateOf("")} // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
+    var maxLength by rememberSaveable { mutableIntStateOf(0) }
+    val orientation = LocalConfiguration.current.orientation // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
+    val scope = rememberCoroutineScope() // scope necessario a lanciare i metodi "suspend" del dao
+    val activity = LocalActivity.current // ottengo il contesto dell'Activity in cui è contenuto il composable per poter chiamare finish()
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
     // e aggiunge la lettera corrispondente al colore del tasto premuto nella sequenza
@@ -93,6 +88,7 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
         sequence = if(sequence.isNotBlank()){
             "$sequence, ${buttonTexts[index]}"
         } else buttonTexts[index]
+        maxLength++
     }
 
     // azione del tasto "Avvia Partita", non fa niente
@@ -101,20 +97,17 @@ fun ScreenOne(modifier: Modifier = Modifier, buttonAction : (List<String>) -> Un
 
     val pauseGameAction : () -> Unit = {}
 
-    // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata,
-    // poi lancia un intent verso GameHistoryActivity passando come dato la lista di sequenze giocate
+    // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
     val endGameAction : () -> Unit = {
-        gamesHistory += sequence
-        sequence = ""
-        buttonAction(gamesHistory)
+        scope.launch{dao.insertGame(GameEntity(sequence = sequence, errorIndex = maxLength))}
+        activity?.finish()
     }
 
     // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row e column)
     // piuttosto che l'imposizione di vincoli tra oggetti
 
-    // LAYOUT in modalità LANDSCAPE : nella colonna di sx il composable ColoredMatrix,
-    // nella colonna di dx i composable TextArea e ButtonArea
+    // LAYOUT in modalità LANDSCAPE : nella colonna di sx il composable ColoredMatrix, nella colonna di dx i composable TextArea e ButtonArea
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
         Row(
             modifier = modifier.padding(12.dp),
