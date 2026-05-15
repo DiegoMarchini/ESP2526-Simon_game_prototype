@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,13 +41,11 @@ import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
 import it.unipd.esp2526.marchini.simongame.data.AppDatabase
-import it.unipd.esp2526.marchini.simongame.data.GameDao
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
-
-private lateinit var dao : GameDao
+import kotlin.collections.listOf
+import kotlin.text.isNotBlank
 
 // lista di colori e lettere associate ai button della matrice 3x2
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
@@ -54,17 +54,24 @@ val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 // activity della prima schermata, contente
 // matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
 class GameActivity : ComponentActivity() {
+
+    // creazione del GameViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della GameViewModelFacotry
+    private val viewModel: GameViewModel by viewModels {
+        val dao = AppDatabase.getDatabase(applicationContext).gameDao()
+        GameViewModelFactory(application, dao)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        dao = AppDatabase.getDatabase(applicationContext).gameDao()
         setContent {
             SimonGameTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ScreenOne(
                         modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
+                        .padding(innerPadding),
+                        viewModel = viewModel
                     )
                 }
             }
@@ -73,13 +80,15 @@ class GameActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreenOne(modifier: Modifier = Modifier) {
+fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
     var sequence by rememberSaveable { mutableStateOf("")} // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
     var maxLength by rememberSaveable { mutableIntStateOf(0) }
     val orientation = LocalConfiguration.current.orientation // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val scope = rememberCoroutineScope() // scope necessario a lanciare i metodi "suspend" del dao
     val activity = LocalActivity.current // ottengo il contesto dell'Activity in cui è contenuto il composable per poter chiamare finish()
+    val highlightedButtonIndex by viewModel.highlightIndex.collectAsState() // indico il button messo in evidenza dal computer
+
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
     // e aggiunge la lettera corrispondente al colore del tasto premuto nella sequenza
@@ -93,14 +102,16 @@ fun ScreenOne(modifier: Modifier = Modifier) {
 
     // azione del tasto "Avvia Partita", non fa niente
     // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
-    val startGameAction : () -> Unit = {}
+    val startGameAction : () -> Unit = {
+        viewModel.startComputerTurn()
+    }
 
     val pauseGameAction : () -> Unit = {}
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
     val endGameAction : () -> Unit = {
-        scope.launch{dao.insertGame(GameEntity(sequence = sequence, errorIndex = maxLength))}
+        viewModel.insertGame(GameEntity(sequence = sequence, errorIndex = 0))
         activity?.finish()
     }
 
@@ -124,6 +135,7 @@ fun ScreenOne(modifier: Modifier = Modifier) {
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
+                highlightedButton = highlightedButtonIndex,
                 buttonAction = { index -> coloredButtonAction(index) }
             )
             }
@@ -160,6 +172,7 @@ fun ScreenOne(modifier: Modifier = Modifier) {
             // matrice 3x2 di button colorati
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
+                highlightedButton = highlightedButtonIndex,
                 buttonAction = { index -> coloredButtonAction(index) }
             )
 
@@ -184,9 +197,12 @@ fun ScreenOne(modifier: Modifier = Modifier) {
 @Composable
 fun ColoredMatrix(
         modifier : Modifier,
+        highlightedButton : Int?,
         buttonAction : (Int) -> Unit
 ){
     var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
+
+
 
     // creazione delle 3 righe della matrice colorata
     repeat(3){
@@ -202,7 +218,7 @@ fun ColoredMatrix(
                     // azione passata come parametro a ColoredMatrix (vedere la definizione di coloredButtonAction in ScreenOne)
                     onClick = { buttonAction(i) },
                     modifier = modifier.fillMaxHeight(),
-                    colors = ButtonDefaults.buttonColors(buttonColors[index]),
+                    colors = ButtonDefaults.buttonColors(if(highlightedButton == index) Color.Gray else buttonColors[index]),
                     shape = RectangleShape,
                     border = BorderStroke(2.dp, Color.DarkGray)
                 ) {}
@@ -264,7 +280,7 @@ fun ButtonArea(
             onClick = {
                 hasStarted = true
                 isRunning = true
-                startGameAction },
+                startGameAction() },
             enabled = !hasStarted,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
