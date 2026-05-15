@@ -2,6 +2,8 @@ package it.unipd.esp2526.marchini.simongame
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import it.unipd.esp2526.marchini.simongame.audio.SoundSynthesizer
 import it.unipd.esp2526.marchini.simongame.data.GameDao
@@ -26,7 +28,7 @@ class GameViewModel(
     val sound = SoundSynthesizer()
     val computer = GameComputer(
         visibleFbAction = { index -> _highlightIndex.value = index}, // callback per consentire all'oggetto GameComputer di modificare la UI
-        soundFbAction = {} // callback per consentire all'oggetto GameComputer di riprodurre i suoni
+        soundFbAction = { index -> sound.playTone(index)} // callback per consentire all'oggetto GameComputer di riprodurre i suoni
     )
 
     // scelto l'uso di StateFlow per l'osservazione di flussi di dati da rendere visibili poi all'UI
@@ -69,3 +71,17 @@ class GameViewModel(
 
 }
 
+// ViewModelFactory per la creazione di oggetti GameViewModel
+// codice ispirato al codelab pubblicato su moodle
+class GameViewModelFactory(
+    private val application : Application,
+    private val dao : GameDao
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass : Class<T>) : T {
+        if(modelClass.isAssignableFrom(GameViewModel::class.java)){
+            @Suppress("UNCHECKED_CAST")
+            return GameViewModel(application, dao) as T
+        }
+        throw IllegalArgumentException("Classe ViewModel sconosciuta")
+    }
+}
