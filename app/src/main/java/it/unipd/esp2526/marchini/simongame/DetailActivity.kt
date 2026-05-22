@@ -28,6 +28,9 @@ import it.unipd.esp2526.marchini.simongame.data.GameDao
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 
 private lateinit var dao : GameDao
 
@@ -62,6 +65,15 @@ fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
 
     LaunchedEffect(gameId) { game = dao.getGameByID(gameId) }
 
+    // indice * 3 perchè la sequenza contiene anche spazi e virgole
+    val correctSequence = game.sequence.take(game.errorIndex * 3)
+    val errorSequence = game.sequence.substring(game.errorIndex * 3)
+
+    val sequence = buildAnnotatedString {
+        append(correctSequence)
+        withStyle(style = SpanStyle(color = Color.Red)){append(errorSequence)}
+    }
+
     Row(
         modifier = modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
@@ -72,7 +84,7 @@ fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
         // numero di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.15f),
-            text = game.errorIndex.toString(),
+            text = game.score.toString(),
             textAlign = Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
@@ -82,7 +94,7 @@ fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
         // sequenza di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.7f),
-            text = game.sequence,
+            text = sequence,
         )
         Spacer(modifier = Modifier.weight(0.05f))
     }

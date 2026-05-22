@@ -38,9 +38,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -146,6 +149,15 @@ fun GameStatsRow(game : GameEntity){
 
     val context = LocalContext.current
 
+    // indice * 3 perchè la sequenza contiene anche spazi e virgole
+    val correctSequence = game.sequence.take(game.errorIndex * 3)
+    val errorSequence = game.sequence.substring(game.errorIndex * 3)
+
+    val sequence = buildAnnotatedString {
+        append(correctSequence)
+        withStyle(style = SpanStyle(color = Color.Red)){append(errorSequence)}
+    }
+
     // riga dedicata ad una partita, contiene numero di rettangoli colorati premuti e sequenza (opportunamente spaziati)
     Row(
         modifier = Modifier
@@ -175,7 +187,7 @@ fun GameStatsRow(game : GameEntity){
         // sequenza di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.7f),
-            text = game.sequence,
+            text = sequence,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
