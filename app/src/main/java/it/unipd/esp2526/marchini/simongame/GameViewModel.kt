@@ -107,7 +107,12 @@ class GameViewModel(
                     startComputerTurn()
                 }
             }
-            -1 -> { _gameState.value = GameState.GAME_OVER } // bottone sbagliato, partita terminata
+            -1 -> { // bottone sbagliato, partita terminata
+                _gameState.value = GameState.GAME_OVER
+                val finalSequence = computer.getSequence()
+                val errorIndex = computer.getErrorIndex()
+                insertGame(GameEntity(score = _score.value , sequence = finalSequence, errorIndex = errorIndex))
+            }
         }
 
     }
