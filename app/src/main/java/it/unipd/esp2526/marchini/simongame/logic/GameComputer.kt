@@ -9,17 +9,18 @@ class GameComputer(
     private val soundFbAction: (Int?) -> Unit
 ) {
     private val buttons = listOf("R", "G", "B", "C", "M", "Y")
-    private val totalButtons = buttons.size
     private val sequence = mutableListOf<Int>()
-
     private var currentIndex = 0
 
     // funzione che estende la sequenza di un button alla volta
     fun extendSequence() {
-        val nextButton = Random.nextInt(totalButtons)
+        val nextButton = Random.nextInt(buttons.size)
         sequence.add(nextButton)
     }
 
+    fun getSequence() : String { return sequence.joinToString(", "){index -> buttons[index]} }
+
+    fun getErrorIndex() : Int { return currentIndex }
     fun resetSequence() {
         sequence.clear()
     }
