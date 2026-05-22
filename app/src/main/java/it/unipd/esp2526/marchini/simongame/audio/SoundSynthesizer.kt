@@ -56,7 +56,12 @@ class SoundSynthesizer {
 
     // funzione chiamata per riprodurre la traccia dato l'id del button premuto
     fun playTone(buttonId : Int?){
-        if(buttonId != null)tracks[buttonId].play()
+        if(buttonId == null)return
+        tracks[buttonId].pause()
+        tracks[buttonId].reloadStaticData()
+        tracks[buttonId].play()
+
+
     }
 
     // funzione per rilasciare le risorse impegnate per la creazione e riproduzione delle tracce audio
