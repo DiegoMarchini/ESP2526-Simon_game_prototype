@@ -10,6 +10,9 @@ data class GameEntity (
     @PrimaryKey(autoGenerate = true)
     val id : Int = 0,
 
+    @ColumnInfo(name = "score")
+    val score : Int,
+
     @ColumnInfo(name = "sequence")
     val sequence : String,
 
