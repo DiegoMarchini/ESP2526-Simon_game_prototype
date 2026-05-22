@@ -43,7 +43,6 @@ import it.unipd.esp2526.marchini.simongame.data.AppDatabase
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.collections.listOf
-import kotlin.text.isNotBlank
 
 // lista di colori e lettere associate ai button della matrice 3x2
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
@@ -100,10 +99,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
-    val endGameAction : () -> Unit = {
-        viewModel.insertGame(GameEntity(sequence = sequence, errorIndex = 0))
-        activity?.finish()
-    }
+    val endGameAction : () -> Unit = { activity?.finish() }
 
     // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row e column)
     // piuttosto che l'imposizione di vincoli tra oggetti
