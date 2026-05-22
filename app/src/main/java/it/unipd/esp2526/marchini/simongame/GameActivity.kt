@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -48,13 +47,12 @@ import kotlin.text.isNotBlank
 
 // lista di colori e lettere associate ai button della matrice 3x2
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
-val buttonTexts = listOf("R", "G", "B", "C", "M", "Y")
 
 // activity della prima schermata, contente
 // matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
 class GameActivity : ComponentActivity() {
 
-    // creazione del GameViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della GameViewModelFacotry
+    // creazione del GameViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della GameViewModelFactory
     private val viewModel: GameViewModel by viewModels {
         val dao = AppDatabase.getDatabase(applicationContext).gameDao()
         GameViewModelFactory(application, dao)
@@ -81,9 +79,9 @@ class GameActivity : ComponentActivity() {
 @Composable
 fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
-    var sequence by rememberSaveable { mutableStateOf("")} // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
     val orientation = LocalConfiguration.current.orientation // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val activity = LocalActivity.current // ottengo il contesto dell'Activity in cui è contenuto il composable per poter chiamare finish()
+    val sequence by viewModel.userSequence.collectAsState() // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
     val highlightedButtonIndex by viewModel.highlightIndex.collectAsState() // indico il button messo in evidenza dal computer
     val score by viewModel.score.collectAsState()
     val gameState by viewModel.gameState.collectAsState()
@@ -92,18 +90,11 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
     // e aggiunge la lettera corrispondente al colore del tasto premuto nella sequenza
     // funzione passata come parametro al composable ColoredMatrix contenente i button colorati
-    val coloredButtonAction : (Int) -> Unit = { index ->
-        sequence = if(sequence.isNotBlank()){
-            "$sequence, ${buttonTexts[index]}"
-        } else buttonTexts[index]
-        viewModel.checkMove(index)
-    }
+    val coloredButtonAction : (Int) -> Unit = { index -> viewModel.checkMove(index) }
 
     // azione del tasto "Avvia Partita", non fa niente
     // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
-    val startGameAction : () -> Unit = {
-        viewModel.startGame()
-    }
+    val startGameAction : () -> Unit = { viewModel.startGame() }
 
     val pauseGameAction : () -> Unit = {}
 

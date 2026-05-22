@@ -55,6 +55,12 @@ class GameViewModel(
     private val _score = MutableStateFlow(0)
     val score : StateFlow<Int> = _score.asStateFlow()
 
+    // variabile che consente di tenere traccia e modificare la sequenza visualizzata nell'area di testo nell'activity di gioco
+    private val _userSequence = MutableStateFlow("")
+    val userSequence : StateFlow<String> = _userSequence.asStateFlow()
+
+    val buttonTexts = listOf("R", "G", "B", "C", "M", "Y") // lista di supporto
+
     // variabile che consente la visualizzazione della lista lista di partite in GameHistoryActivity
     val allGames: StateFlow<List<GameEntity>> = dao.getAllGames()
         .stateIn(
@@ -83,18 +89,25 @@ class GameViewModel(
     fun checkMove(index : Int) {
         if(_gameState.value != GameState.PLAYER_TURN) return // ignoro la pressione di tasti se non è il turno del giocatore
         sound.playTone(index)
+        viewModelScope.launch{
+            _highlightIndex.value = index
+            delay(500)
+            _highlightIndex.value = null
+        }
+        val pressedButton = buttonTexts[index]
+        _userSequence.value = if(_userSequence.value.isNotBlank()) " ${_userSequence.value}, $pressedButton"
+                              else pressedButton
         when(computer.checkPlayerMove(index)){
-            1 -> {}
-            0 -> {
+            1 -> {} // bottone corretto, sequenza non finita, in attesa dell'utente
+            0 -> { // bottone corretto, sequenza finita, inizia un nuovo turno
                 _score.value += 1
                 viewModelScope.launch {
                     delay(1000)
+                    _userSequence.value = ""
                     startComputerTurn()
                 }
             }
-            -1 -> {
-                _gameState.value = GameState.GAME_OVER
-            }
+            -1 -> { _gameState.value = GameState.GAME_OVER } // bottone sbagliato, partita terminata
         }
 
     }
