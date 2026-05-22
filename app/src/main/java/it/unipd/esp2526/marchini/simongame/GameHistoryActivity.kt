@@ -165,7 +165,7 @@ fun GameStatsRow(game : GameEntity){
         // numero di rettangoli colorati premuti in una partita
         Text(
             modifier = Modifier.weight(0.15f),
-            text = game.errorIndex.toString(),
+            text = game.score.toString(),
             textAlign = Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
