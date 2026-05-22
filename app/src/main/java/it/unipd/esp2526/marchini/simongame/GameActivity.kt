@@ -26,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -83,11 +82,11 @@ class GameActivity : ComponentActivity() {
 fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
     var sequence by rememberSaveable { mutableStateOf("")} // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
-    var maxLength by rememberSaveable { mutableIntStateOf(0) }
     val orientation = LocalConfiguration.current.orientation // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
-    val scope = rememberCoroutineScope() // scope necessario a lanciare i metodi "suspend" del dao
     val activity = LocalActivity.current // ottengo il contesto dell'Activity in cui è contenuto il composable per poter chiamare finish()
     val highlightedButtonIndex by viewModel.highlightIndex.collectAsState() // indico il button messo in evidenza dal computer
+    val score by viewModel.score.collectAsState()
+    val gameState by viewModel.gameState.collectAsState()
 
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
@@ -97,13 +96,13 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
         sequence = if(sequence.isNotBlank()){
             "$sequence, ${buttonTexts[index]}"
         } else buttonTexts[index]
-        maxLength++
+        viewModel.checkMove(index)
     }
 
     // azione del tasto "Avvia Partita", non fa niente
     // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
     val startGameAction : () -> Unit = {
-        viewModel.startComputerTurn()
+        viewModel.startGame()
     }
 
     val pauseGameAction : () -> Unit = {}
@@ -136,6 +135,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
                 highlightedButton = highlightedButtonIndex,
+                gameState = gameState,
                 buttonAction = { index -> coloredButtonAction(index) }
             )
             }
@@ -173,6 +173,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
             ColoredMatrix(
                 modifier = Modifier.weight(1f),
                 highlightedButton = highlightedButtonIndex,
+                gameState = gameState,
                 buttonAction = { index -> coloredButtonAction(index) }
             )
 
@@ -198,6 +199,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 fun ColoredMatrix(
         modifier : Modifier,
         highlightedButton : Int?,
+        gameState: GameState,
         buttonAction : (Int) -> Unit
 ){
     var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
@@ -218,7 +220,11 @@ fun ColoredMatrix(
                     // azione passata come parametro a ColoredMatrix (vedere la definizione di coloredButtonAction in ScreenOne)
                     onClick = { buttonAction(i) },
                     modifier = modifier.fillMaxHeight(),
-                    colors = ButtonDefaults.buttonColors(if(highlightedButton == index) Color.Gray else buttonColors[index]),
+                    enabled = gameState == GameState.PLAYER_TURN,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(highlightedButton == index) buttonColors[index] else buttonColors[index].copy(alpha = 0.6f),
+                        disabledContainerColor = if(highlightedButton == index) buttonColors[index] else buttonColors[index].copy(alpha = 0.6f)
+                    ),
                     shape = RectangleShape,
                     border = BorderStroke(2.dp, Color.DarkGray)
                 ) {}
