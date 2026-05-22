@@ -10,12 +10,16 @@ import it.unipd.esp2526.marchini.simongame.data.GameDao
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.logic.GameComputer
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+// classe enum per rappresentare gli stati di gioco
+enum class GameState {IDLE, COMPUTER_TURN, PLAYER_TURN, GAME_OVER}
 
 // ViewModel che gestisce le chiamate eseguite da UI a elementi terzi (DB, classi di logica e utility)
 // fornisce accesso ai dati all'UI esponendo variabili poi catturate dalle activity come stato di funzioni composable
@@ -43,6 +47,14 @@ class GameViewModel(
     private val _selectedGame = MutableStateFlow<GameEntity?>(null)
     val selectedGame = _selectedGame.asStateFlow()
 
+    // variabile per rappresentare il corrente stato di gioco
+    private val _gameState = MutableStateFlow(GameState.IDLE)
+    val gameState : StateFlow<GameState> = _gameState.asStateFlow()
+
+    // variabile per tenere traccia del punteggio della partita
+    private val _score = MutableStateFlow(0)
+    val score : StateFlow<Int> = _score.asStateFlow()
+
     // variabile che consente la visualizzazione della lista lista di partite in GameHistoryActivity
     val allGames: StateFlow<List<GameEntity>> = dao.getAllGames()
         .stateIn(
@@ -51,13 +63,43 @@ class GameViewModel(
             initialValue = emptyList() // valore iniziale dello StateFlow prima che venga popolato dallle partitte prese dal DB
         )
 
+    fun startGame(){
+        computer.resetSequence()
+        _score.value = 0
+        startComputerTurn()
+    }
+
     // funzione per far iniziare il turno del computer (invocata in GameActivity)
     fun startComputerTurn(){
         viewModelScope.launch {
+            _gameState.value = GameState.COMPUTER_TURN
             computer.extendSequence()
             computer.playSequence(800)
+            _gameState.value = GameState.PLAYER_TURN
         }
     }
+
+    // funzione per controllare la correttezza del button cliccato dall'utente
+    fun checkMove(index : Int) {
+        if(_gameState.value != GameState.PLAYER_TURN) return // ignoro la pressione di tasti se non è il turno del giocatore
+        sound.playTone(index)
+        when(computer.checkPlayerMove(index)){
+            1 -> {}
+            0 -> {
+                _score.value += 1
+                viewModelScope.launch {
+                    delay(1000)
+                    startComputerTurn()
+                }
+            }
+            -1 -> {
+                _gameState.value = GameState.GAME_OVER
+            }
+        }
+
+    }
+
+    fun resetComputer(){computer.resetSequence()}
 
     // funzione per inserire una nuova partita (invocata alla chiusura di GameActivity)
     fun insertGame(game : GameEntity) = viewModelScope.launch(Dispatchers.IO) {
