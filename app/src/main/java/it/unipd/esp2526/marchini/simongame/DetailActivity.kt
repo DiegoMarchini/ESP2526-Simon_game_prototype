@@ -58,7 +58,7 @@ class DetailActivity : ComponentActivity() {
 @Composable
 fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
 
-    var game by remember{mutableStateOf(GameEntity(id = gameId, sequence = "", errorIndex = 0))}
+    var game by remember{mutableStateOf(GameEntity(id = gameId, score = 0, sequence = "", errorIndex = 0))}
 
     LaunchedEffect(gameId) { game = dao.getGameByID(gameId) }
 
