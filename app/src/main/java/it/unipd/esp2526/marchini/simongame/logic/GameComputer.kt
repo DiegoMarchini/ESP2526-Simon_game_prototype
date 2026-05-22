@@ -12,11 +12,16 @@ class GameComputer(
     private val totalButtons = buttons.size
     private val sequence = mutableListOf<Int>()
 
+    private var currentIndex = 0
+
     // funzione che estende la sequenza di un button alla volta
-    fun extendSequence() : String {
+    fun extendSequence() {
         val nextButton = Random.nextInt(totalButtons)
         sequence.add(nextButton)
-        return buttons[nextButton]
+    }
+
+    fun resetSequence() {
+        sequence.clear()
     }
 
     // funzione che riproduce all'utente la sequenza con feedback visivi e uditivi
@@ -28,8 +33,21 @@ class GameComputer(
             delay(pauseMillis)
             // fermo i feedback
             visibleFbAction(null)
-            soundFbAction(null)
+            //soundFbAction(null)
             delay(pauseMillis/4) // pausa breve per impedire un feedback continuo in caso ci siano due colori uguali consecutivi nella sequenza
         }
+    }
+
+    fun checkPlayerMove(playerIndex : Int) : Int {
+        var feedback = 1
+        if(playerIndex == sequence[currentIndex]) {
+            currentIndex++
+            if (currentIndex >= sequence.size){
+                currentIndex = 0
+                feedback = 0
+            }
+        }
+        else feedback = -1
+        return feedback
     }
 }
