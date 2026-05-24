@@ -3,6 +3,7 @@ package it.unipd.esp2526.marchini.simongame
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,12 +14,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +45,8 @@ import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import it.unipd.esp2526.marchini.simongame.data.AppDatabase
-import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.collections.listOf
 
@@ -99,10 +105,27 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
-    val endGameAction : () -> Unit = { activity?.finish() }
+    val endGameAction : () -> Unit = {
+        if(gameState != GameState.GAME_OVER) viewModel.endGame() // in caso di GAME OVER il gioco è già stato salvato da checkMove
+        activity?.finish() }
+
+    BackHandler(enabled = true) {endGameAction()}
 
     // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row e column)
     // piuttosto che l'imposizione di vincoli tra oggetti
+
+    if(gameState == GameState.GAME_OVER){
+        Popup(alignment = Alignment.Center){
+            Card(
+                modifier = Modifier.wrapContentSize(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF4A1525), contentColor = Color(0xFFFFE3E8)),
+                elevation = CardDefaults.cardElevation(8.dp),
+                //border = BorderStroke(4.dp, Color.Black)
+            ){
+                Text(text = "${stringResource(R.string.game_over)} $score", fontSize = 32.sp, lineHeight = 36.sp, textAlign = Center)
+            }
+        }
+    }
 
     // LAYOUT in modalità LANDSCAPE : nella colonna di sx il composable ColoredMatrix, nella colonna di dx i composable TextArea e ButtonArea
     if(orientation == Configuration.ORIENTATION_LANDSCAPE){
