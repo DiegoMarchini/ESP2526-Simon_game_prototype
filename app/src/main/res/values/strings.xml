@@ -7,4 +7,5 @@
     <string name="end_game">End Game</string>
     <string name="games_history">Games History</string>
     <string name="new_game">New Game</string>
+    <string name="game_over">Mistake!\nGame Over!\nYour score is:</string>
 </resources>
