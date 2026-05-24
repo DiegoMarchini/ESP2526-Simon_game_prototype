@@ -109,15 +109,20 @@ class GameViewModel(
             }
             -1 -> { // bottone sbagliato, partita terminata
                 _gameState.value = GameState.GAME_OVER
-                val finalSequence = computer.getSequence()
-                val errorIndex = computer.getErrorIndex()
-                insertGame(GameEntity(score = _score.value , sequence = finalSequence, errorIndex = errorIndex))
+                endGame()
             }
         }
 
     }
 
     fun resetComputer(){computer.resetSequence()}
+
+    fun endGame(){
+        if(_score.value == 0 && (_gameState.value == GameState.COMPUTER_TURN || _gameState.value == GameState.IDLE)) return
+        val finalSequence = computer.getSequence()
+        val errorIndex = computer.getErrorIndex()
+        insertGame(GameEntity(score = _score.value , sequence = finalSequence, errorIndex = errorIndex))
+    }
 
     // funzione per inserire una nuova partita (invocata alla chiusura di GameActivity)
     fun insertGame(game : GameEntity) = viewModelScope.launch(Dispatchers.IO) {
