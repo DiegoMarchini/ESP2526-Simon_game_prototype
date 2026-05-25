@@ -29,12 +29,6 @@ class GameViewModel(
     private val dao : GameDao
 ) : AndroidViewModel(application) {
 
-    val sound = SoundSynthesizer()
-    val computer = GameComputer(
-        visibleFbAction = { index -> _highlightIndex.value = index}, // callback per consentire all'oggetto GameComputer di modificare la UI
-        soundFbAction = { index -> sound.playTone(index)} // callback per consentire all'oggetto GameComputer di riprodurre i suoni
-    )
-
     // scelto l'uso di StateFlow per l'osservazione di flussi di dati da rendere visibili poi all'UI
     // uso una variabile privata che il ViewModel manipola, e ne espongo il valore in lettura  all'UI attraverso una variabile pubblica
     // mantengo l'incapsulamento
@@ -61,6 +55,13 @@ class GameViewModel(
 
     val buttonTexts = listOf("R", "G", "B", "C", "M", "Y") // lista di supporto
 
+    val sound = SoundSynthesizer()
+    val computer = GameComputer(
+        visibleFbAction = { index -> _highlightIndex.value = index}, // callback per consentire all'oggetto GameComputer di modificare la UI
+        soundFbAction = { index -> sound.playTone(index)}, // callback per consentire all'oggetto GameComputer di riprodurre i suoni
+        getState = {_gameState.value}
+    )
+
     // variabile che consente la visualizzazione della lista lista di partite in GameHistoryActivity
     val allGames: StateFlow<List<GameEntity>> = dao.getAllGames()
         .stateIn(
@@ -81,7 +82,7 @@ class GameViewModel(
             _gameState.value = GameState.COMPUTER_TURN
             computer.extendSequence()
             computer.playSequence(800)
-            _gameState.value = GameState.PLAYER_TURN
+            if(_gameState.value == GameState.COMPUTER_TURN)_gameState.value = GameState.PLAYER_TURN
         }
     }
 
@@ -116,6 +117,20 @@ class GameViewModel(
     }
 
     fun resetComputer(){computer.resetSequence()}
+
+    fun pauseGame(){ // col controllo tra indice e score mi assicuro che nel lasso di tempo tra presentazione dell'ultimo elemento e passaggio al PLAYER_TURN, non si possa premere pausa
+        if(_gameState.value == GameState.COMPUTER_TURN && computer.getPlaybackIndex() < _score.value) _gameState.value = GameState.PAUSE
+    }
+
+    fun resumeGame(){
+        if(gameState.value == GameState.PAUSE){
+            viewModelScope.launch{
+                _gameState.value = GameState.COMPUTER_TURN
+                computer.playSequence(800)
+                if(_gameState.value == GameState.COMPUTER_TURN) _gameState.value = GameState.PLAYER_TURN
+            }
+        }
+    }
 
     fun endGame(){
         if(_score.value == 0 && (_gameState.value == GameState.COMPUTER_TURN || _gameState.value == GameState.IDLE)) return

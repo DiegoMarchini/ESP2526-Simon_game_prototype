@@ -101,7 +101,9 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
     // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
     val startGameAction : () -> Unit = { viewModel.startGame() }
 
-    val pauseGameAction : () -> Unit = {}
+    val pauseGameAction : () -> Unit = {viewModel.pauseGame()}
+
+    val resumeGameAction : () -> Unit = {viewModel.resumeGame()}
 
     // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
     // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
@@ -167,6 +169,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
                     gameState = gameState,
                     startGameAction = startGameAction, // azione del button "Cancella"
                     pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
+                    resumeGameAction = resumeGameAction, // azione del tasto "Riprendi"
                     endGameAction = endGameAction // azione del button "Fine Partita"
                 )
             }
@@ -200,6 +203,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
                 gameState = gameState,
                 startGameAction = startGameAction, // azione del button "Avvia Partita"
                 pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
+                resumeGameAction = resumeGameAction, // azione del tasto "Riprendi"
                 endGameAction = endGameAction // azione del button "Fine Partita"
             )
         }
@@ -283,6 +287,7 @@ fun ButtonArea(
         gameState: GameState,
         startGameAction : () -> Unit,
         pauseGameAction : () -> Unit,
+        resumeGameAction : () -> Unit,
         endGameAction : () -> Unit
 ){
     Row(
@@ -306,7 +311,8 @@ fun ButtonArea(
 
         // button "Pausa"
         Button(
-            onClick = pauseGameAction,
+            onClick = if(gameState == GameState.PAUSE) resumeGameAction
+                      else pauseGameAction,
             enabled = (gameState == GameState.COMPUTER_TURN) || (gameState == GameState.PAUSE),
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
