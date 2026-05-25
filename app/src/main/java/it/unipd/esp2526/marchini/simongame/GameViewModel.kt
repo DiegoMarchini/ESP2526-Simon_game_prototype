@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 // classe enum per rappresentare gli stati di gioco
-enum class GameState {IDLE, COMPUTER_TURN, PLAYER_TURN, GAME_OVER}
+enum class GameState {IDLE, COMPUTER_TURN, PLAYER_TURN, PAUSE, GAME_OVER}
 
 // ViewModel che gestisce le chiamate eseguite da UI a elementi terzi (DB, classi di logica e utility)
 // fornisce accesso ai dati all'UI esponendo variabili poi catturate dalle activity come stato di funzioni composable
