@@ -164,6 +164,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
                 // area dei button "Cancella" e "Fine Partita"
                 ButtonArea(
                     modifier = Modifier.weight(1f),
+                    gameState = gameState,
                     startGameAction = startGameAction, // azione del button "Cancella"
                     pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
                     endGameAction = endGameAction // azione del button "Fine Partita"
@@ -196,6 +197,7 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
             // area dei button "Cancella" e "Fine Partita"
             ButtonArea(
                 modifier = Modifier.weight(1f),
+                gameState = gameState,
                 startGameAction = startGameAction, // azione del button "Avvia Partita"
                 pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
                 endGameAction = endGameAction // azione del button "Fine Partita"
@@ -278,14 +280,11 @@ fun TextArea(
 @Composable
 fun ButtonArea(
         modifier : Modifier,
+        gameState: GameState,
         startGameAction : () -> Unit,
         pauseGameAction : () -> Unit,
         endGameAction : () -> Unit
 ){
-    // variabile di stato che identifica se la partita è stata avviata
-    var hasStarted by rememberSaveable{ mutableStateOf(false)}
-    // variabile di stato che identifica se la partita sta procedendo o è statta messa in pausa
-    var isRunning by rememberSaveable{ mutableStateOf(false)}
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -293,11 +292,8 @@ fun ButtonArea(
     ) {
         // button "Avvia Partita"
         Button(
-            onClick = {
-                hasStarted = true
-                isRunning = true
-                startGameAction() },
-            enabled = !hasStarted,
+            onClick = startGameAction,
+            enabled = gameState == GameState.IDLE,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
@@ -310,17 +306,16 @@ fun ButtonArea(
 
         // button "Pausa"
         Button(
-            onClick =  {
-                isRunning = !isRunning
-                pauseGameAction },
-            enabled = hasStarted,
+            onClick = pauseGameAction,
+            enabled = (gameState == GameState.COMPUTER_TURN) || (gameState == GameState.PAUSE),
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
             Text(
-                text = if(hasStarted){
-                    if(isRunning){stringResource(R.string.pause_game)}
-                    else (stringResource(R.string.resume_game))}
-                    else "-",
+                text = when(gameState){
+                    GameState.COMPUTER_TURN -> stringResource(R.string.pause_game)
+                    GameState.PAUSE -> stringResource(R.string.resume_game)
+                    else -> "-"
+                },
                 fontSize = 16.sp,
                 textAlign = Center,
                 fontWeight = FontWeight.Bold,
@@ -333,7 +328,7 @@ fun ButtonArea(
         // button "Fine Partita"
         Button(
             onClick = endGameAction,
-            enabled = hasStarted,
+            enabled = gameState != GameState.IDLE,
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
