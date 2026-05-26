@@ -8,4 +8,8 @@
     <string name="games_history">Games History</string>
     <string name="new_game">New Game</string>
     <string name="game_over">Mistake!\nGame Over!\nYour score is:</string>
+    <string name="score_detail">Score</string>
+    <string name="sequence_detail">FINAL SEQUENCE</string>
+    <string name="streak_detail">Positive Streak</string>
+    <string name="longest_detail">Longest sequence</string>
 </resources>

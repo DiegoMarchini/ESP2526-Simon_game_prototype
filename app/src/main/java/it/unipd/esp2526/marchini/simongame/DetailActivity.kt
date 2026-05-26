@@ -5,9 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -28,8 +27,10 @@ import it.unipd.esp2526.marchini.simongame.data.GameDao
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.withStyle
 
 private lateinit var dao : GameDao
@@ -48,7 +49,6 @@ class DetailActivity : ComponentActivity() {
                     ScreenThree(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.DarkGray)
                             .padding(innerPadding),
                         gameId = gameId
                     )
@@ -65,37 +65,85 @@ fun ScreenThree(modifier : Modifier = Modifier, gameId : Int){
 
     LaunchedEffect(gameId) { game = dao.getGameByID(gameId) }
 
+    val longestSequence = if(game.score != 0) game.sequence.take(game.score * 3 - 2) else "No sequence"
     // indice * 3 perchè la sequenza contiene anche spazi e virgole
     val correctSequence = game.sequence.take(game.errorIndex * 3)
     val errorSequence = game.sequence.substring(game.errorIndex * 3)
-
+    val streak = (game.score * (game.score + 1) / 2) + game.errorIndex // quanti button sono stati premuti correttamente prima di sbagliare
     val sequence = buildAnnotatedString {
         append(correctSequence)
         withStyle(style = SpanStyle(color = Color.Red)){append(errorSequence)}
     }
 
-    Row(
-        modifier = modifier.fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        Spacer(modifier = Modifier.weight(0.01f))
+    Column(modifier = modifier.background(Color(0xFF121824))){
+        Box(
+            modifier = Modifier.weight(0.3f).fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ){
+            Text(
+                text = "${stringResource(R.string.score_detail)}: ${game.score}",
+                color = Color(0xFFFBBF24),
+                textAlign = Center,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
-        // numero di rettangoli colorati premuti in una partita
-        Text(
-            modifier = Modifier.weight(0.15f),
-            text = game.score.toString(),
-            textAlign = Center,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.weight(0.09f))
+        Box(
+            modifier = Modifier.weight(0.1f).fillMaxSize(),
+            contentAlignment = Alignment.Center,
 
-        // sequenza di rettangoli colorati premuti in una partita
-        Text(
-            modifier = Modifier.weight(0.7f),
-            text = sequence,
-        )
-        Spacer(modifier = Modifier.weight(0.05f))
+        ){
+            Text(
+                text = stringResource(R.string.sequence_detail),
+                color = Color(0xFF94A3B8),
+                fontSize = 28.sp,
+                textAlign = Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Box(
+            modifier = Modifier.weight(0.3f).fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+
+            ){
+            Text(
+                text = sequence,
+                fontSize = 24.sp,
+                textAlign = Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Box(
+            modifier = Modifier.weight(0.2f).fillMaxSize(),
+            contentAlignment = Alignment.Center,
+
+            ){
+            Text(
+                text = "${stringResource(R.string.longest_detail)}\n $longestSequence",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                fontStyle = FontStyle.Italic,
+                textAlign = Center
+            )
+        }
+
+        Box(
+            modifier = Modifier.weight(0.1f).fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+
+            ){
+            Text(
+                text = "${stringResource(R.string.streak_detail)}: $streak",
+                fontSize = 24.sp,
+                textAlign = Center,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
+
+
 }

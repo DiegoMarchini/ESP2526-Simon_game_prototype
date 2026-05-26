@@ -7,4 +7,8 @@
     <string name="games_history">Storico Partite</string>
     <string name="new_game">Nuova Partita</string>
     <string name="game_over">Sbagliato!\nPartita Terminata!\nPunteggio:</string>
+    <string name="score_detail">Punteggio</string>
+    <string name="sequence_detail">SEQUENZA FINALE</string>
+    <string name="streak_detail">Serie Positiva</string>
+    <string name="longest_detail">Sequenza più lunga</string>
 </resources>
