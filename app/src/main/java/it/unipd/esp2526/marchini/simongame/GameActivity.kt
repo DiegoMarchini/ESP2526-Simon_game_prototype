@@ -334,7 +334,7 @@ fun ButtonArea(
         // button "Fine Partita"
         Button(
             onClick = endGameAction,
-            enabled = gameState != GameState.IDLE,
+            enabled = (gameState != GameState.IDLE) && (gameState != GameState.GAME_OVER),
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
         ) {
             Text(
