@@ -1,6 +1,6 @@
 # Simon Game Prototype
 
-Progetto intermedio del corso
+Progetto finale del corso
 **Programmazione di Sistemi Embedded 25-26**
 
 ## Sviluppo e testing
