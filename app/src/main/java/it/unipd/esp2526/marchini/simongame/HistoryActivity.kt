@@ -53,7 +53,7 @@ import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.getValue
 
-class GameHistoryActivity : ComponentActivity() {
+class HistoryActivity : ComponentActivity() {
 
     // creazione dell' HistoryViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della HistoryViewModelFactory
     private val viewModel: HistoryViewModel by viewModels {
