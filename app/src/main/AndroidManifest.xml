@@ -14,10 +14,10 @@
 
         <!--
         activity della lista delle partite giocate.
-        L'applicazione parte lanciando GameHistoryActivity.
+        L'applicazione parte lanciando HistoryActivity.
          -->
         <activity
-            android:name=".GameHistoryActivity"
+            android:name=".HistoryActivity"
             android:exported="true"
             android:theme="@style/Theme.SimonGame">
             <intent-filter>
@@ -34,6 +34,9 @@
             android:exported="true"
             android:theme="@style/Theme.SimonGame" />
 
+        <!--
+        activity del dettaglio partita.
+         -->
         <activity
             android:name=".DetailActivity"
             android:exported="true"
