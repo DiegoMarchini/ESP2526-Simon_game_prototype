@@ -36,7 +36,7 @@ class GameViewModel(
     private val computerIndex : StateFlow<Int> = savedStateHandle.getStateFlow("computer_index", 0)
     private val playbackIndex : StateFlow<Int> = savedStateHandle.getStateFlow("playback_index", 0)
 
-    // variabile per indicare il button considerato dal computer
+    // variabile per indicare il button da illuminare
     val highlightIndex : StateFlow<Int?> = savedStateHandle.getStateFlow("highlight_index", null)
 
     // variabile per rappresentare il corrente stato di gioco
@@ -45,7 +45,7 @@ class GameViewModel(
     // variabile per tenere traccia del punteggio della partita
     val score : StateFlow<Int> = savedStateHandle.getStateFlow("score", 0)
 
-    // variabile che consente di tenere traccia e modificare la sequenza visualizzata nell'area di testo nell'activity di gioco
+    // variabile per tenere traccia e modificare la sequenza visualizzata nell'area di testo nell'activity di gioco
     val userSequence : StateFlow<String> = savedStateHandle.getStateFlow("user_sequence", "")
 
     val buttonTexts = listOf("R", "G", "B", "C", "M", "Y") // lista di supporto
@@ -55,12 +55,7 @@ class GameViewModel(
         visibleFbAction = { index -> savedStateHandle["highlight_index"] = index}, // callback per consentire all'oggetto GameComputer di modificare la UI
         soundFbAction = { index -> sound.playTone(index)}, // callback per consentire all'oggetto GameComputer di riprodurre i suoni
         getState = {gameState.value},
-        getSequence = {computerSequence.value},
-        setSequence = {newList -> savedStateHandle["computer_sequence"] = newList},
-        getIndex = {computerIndex.value},
-        setIndex = {newIndex -> savedStateHandle["computer_index"] = newIndex},
-        getPbIndex = {playbackIndex.value},
-        setPbIndex = {newIndex -> savedStateHandle["playback_index"] = newIndex}
+        handle = savedStateHandle
     )
 
     fun startGame(){
@@ -109,10 +104,8 @@ class GameViewModel(
 
     }
 
-    fun resetComputer(){computer.resetSequence()}
-
     fun pauseGame(){ // col controllo tra indice e score mi assicuro che nel lasso di tempo tra presentazione dell'ultimo elemento e passaggio al PLAYER_TURN, non si possa premere pausa
-        if(gameState.value == GameState.COMPUTER_TURN && computer.getPlaybackIndex() < score.value) savedStateHandle["game_state"] = GameState.PAUSE
+        if(gameState.value == GameState.COMPUTER_TURN && playbackIndex.value < score.value) savedStateHandle["game_state"] = GameState.PAUSE
     }
 
     fun resumeGame(){
@@ -128,8 +121,7 @@ class GameViewModel(
     fun endGame(){
         if(score.value == 0 && (gameState.value == GameState.COMPUTER_TURN || gameState.value == GameState.IDLE)) return
         val finalSequence = computer.getColorSequence()
-        val errorIndex = computer.getErrorIndex()
-        insertGame(GameEntity(score = score.value , sequence = finalSequence, errorIndex = errorIndex))
+        insertGame(GameEntity(score = score.value , sequence = finalSequence, errorIndex = computerIndex.value))
     }
 
     // funzione per inserire una nuova partita (invocata alla chiusura di GameActivity)
