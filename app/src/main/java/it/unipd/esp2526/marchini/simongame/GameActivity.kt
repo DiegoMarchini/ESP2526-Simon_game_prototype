@@ -45,8 +45,9 @@ import it.unipd.esp2526.marchini.simongame.data.AppDatabase
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.collections.listOf
 
-// lista di colori e lettere associate ai button della matrice 3x2
+// lista di colori e lettere associate ai button della matrice 3x2 e relativa versione più spenta
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
+val dimmedColors = buttonColors.map {it.copy(alpha =0.6f)}
 
 // activity della prima schermata, contente
 // matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
@@ -219,8 +220,6 @@ fun ColoredMatrix(
 ){
     var index = 0 // indice per utilizzare i valori diversi da bottone a bottone
 
-
-
     // creazione delle 3 righe della matrice colorata
     repeat(3){
         Row(
@@ -237,8 +236,8 @@ fun ColoredMatrix(
                     modifier = modifier.fillMaxHeight(),
                     enabled = gameState == GameState.PLAYER_TURN,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(highlightedButton == index) buttonColors[index] else buttonColors[index].copy(alpha = 0.6f),
-                        disabledContainerColor = if(highlightedButton == index) buttonColors[index] else buttonColors[index].copy(alpha = 0.6f)
+                        containerColor = if(highlightedButton == index) buttonColors[index] else dimmedColors[index],
+                        disabledContainerColor = if(highlightedButton == index) buttonColors[index] else dimmedColors[index]
                     ),
                     shape = RectangleShape,
                     border = BorderStroke(2.dp, Color.DarkGray)
