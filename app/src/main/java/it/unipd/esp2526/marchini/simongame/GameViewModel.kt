@@ -58,6 +58,11 @@ class GameViewModel(
         handle = savedStateHandle
     )
 
+    // quando il GameViewModel viene eliminato -> rilascio le risorse
+    override fun onCleared(){
+        super.onCleared()
+        sound.release()
+    }
     fun startGame(){
         computer.resetSequence()
         savedStateHandle["score"] = 0
@@ -77,6 +82,7 @@ class GameViewModel(
     // funzione per controllare la correttezza del button cliccato dall'utente
     fun checkMove(index : Int) {
         if(gameState.value != GameState.PLAYER_TURN) return // ignoro la pressione di tasti se non è il turno del giocatore
+        sound.stopAllTones()
         sound.playTone(index)
         viewModelScope.launch{
             savedStateHandle["highlight_index"] = index
@@ -105,7 +111,10 @@ class GameViewModel(
     }
 
     fun pauseGame(){ // col controllo tra indice e score mi assicuro che nel lasso di tempo tra presentazione dell'ultimo elemento e passaggio al PLAYER_TURN, non si possa premere pausa
-        if(gameState.value == GameState.COMPUTER_TURN && playbackIndex.value < score.value) savedStateHandle["game_state"] = GameState.PAUSE
+        if(gameState.value == GameState.COMPUTER_TURN && playbackIndex.value < score.value){
+            savedStateHandle["game_state"] = GameState.PAUSE
+            sound.stopAllTones()
+        }
     }
 
     fun resumeGame(){
