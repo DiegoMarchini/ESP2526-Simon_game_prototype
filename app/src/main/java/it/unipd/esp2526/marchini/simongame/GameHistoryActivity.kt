@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,16 +49,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.unipd.esp2526.marchini.simongame.data.AppDatabase
-import it.unipd.esp2526.marchini.simongame.data.GameDao
 import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
+import kotlin.getValue
 
-private lateinit var dao : GameDao
 class GameHistoryActivity : ComponentActivity() {
+
+    // creazione dell' HistoryViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della HistoryViewModelFactory
+    private val viewModel: HistoryViewModel by viewModels {
+        val dao = AppDatabase.getDatabase(applicationContext).gameDao()
+        HistoryViewModelFactory(application, dao)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        dao = AppDatabase.getDatabase(applicationContext).gameDao()
         setContent {
             SimonGameTheme {
                 Scaffold(
@@ -72,7 +78,7 @@ class GameHistoryActivity : ComponentActivity() {
                         text = { Text(getString(R.string.new_game))})
                     }
                 ) { innerPadding ->
-                    ScreenTwo(modifier = Modifier.fillMaxSize().padding(innerPadding))
+                    ScreenTwo(modifier = Modifier.fillMaxSize().padding(innerPadding), viewModel = viewModel)
                 }
             }
         }
@@ -80,7 +86,9 @@ class GameHistoryActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScreenTwo(modifier: Modifier = Modifier){
+fun ScreenTwo(modifier: Modifier = Modifier, viewModel : HistoryViewModel){
+
+    val games by viewModel.allGames.collectAsState(initial = emptyList())
 
     // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val orientation = LocalConfiguration.current.orientation
@@ -121,14 +129,13 @@ fun ScreenTwo(modifier: Modifier = Modifier){
             )
         }
         // lista dinamica popolata dalle sequenze giocate
-        GamesList()
+        GamesList(games)
     }
 }
 
 @Composable
-fun GamesList(){
+fun GamesList(games : List<GameEntity>){
 
-    val games by dao.getAllGames().collectAsState(initial = emptyList())
 
     // lista dinamica delle partite (sequenze digitate), in alto si trovano le sequenze delle partite più recenti
     LazyColumn(
