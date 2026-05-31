@@ -3,6 +3,13 @@
 Progetto finale del corso
 **Programmazione di Sistemi Embedded 25-26**
 
+## Organizzazione del codice
+Le varie classi utilizzate nel progetto sono suddivise in più sottopacchetti:  
+**audio** : contiene la classe per la gestione delle tracce audio  
+**data** : contiene entità, DAO e Database Room  
+**logic** : contiene la classe che funge da "computer di gioco"  
+Le 3 activity e i relativi ViewModel si trovano nel package principale
+
 ## Sviluppo e testing
 
 **NOTA**: Provando ad emulare su Android Studio il profilo HW del Dispositivo 1 è possibile che la densità dello schermo non coincida con quella indicata qui sotto per via di approssimazioni di Android Studio. In tal caso si può usare il profilo HW del Dispositivo 2.
