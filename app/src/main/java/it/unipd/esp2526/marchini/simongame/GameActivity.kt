@@ -315,11 +315,8 @@ fun ButtonArea(
             modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
             Text(
-                text = when(gameState){
-                    GameState.COMPUTER_TURN -> stringResource(R.string.pause_game)
-                    GameState.PAUSE -> stringResource(R.string.resume_game)
-                    else -> "-"
-                },
+                text = if(gameState == GameState.PAUSE){ stringResource(R.string.resume_game)}
+                       else stringResource(R.string.pause_game),
                 fontSize = 16.sp,
                 textAlign = Center,
                 fontWeight = FontWeight.Bold,
