@@ -20,7 +20,8 @@ class DetailViewModel(
     private val dao : GameDao
 ) : AndroidViewModel(application) {
 
-    // variabile per esporre il gioco selezionato tramite id alla UI
+    // uso una variabile privata che il ViewModel manipola, e ne espongo il valore in lettura  all'UI attraverso una variabile pubblica
+    // mantengo l'incapsulamento
     private val _selectedGame = MutableStateFlow<GameEntity>(GameEntity(0, 0, "",0))
     val selectedGame : StateFlow<GameEntity> = _selectedGame.asStateFlow()
 

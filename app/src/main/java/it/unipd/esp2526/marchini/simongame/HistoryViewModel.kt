@@ -18,7 +18,7 @@ class HistoryViewModel(
     private val dao : GameDao
 ) : AndroidViewModel(application) {
 
-    // variabile che consente la visualizzazione della lista lista di partite in GameHistoryActivity
+    // variabile che consente la visualizzazione della lista lista di partite in HistoryActivity
     val allGames: StateFlow<List<GameEntity>> = dao.getAllGames()
         .stateIn(
             scope = viewModelScope, // l'aggiornamento della lista di partite è legata all'esistenza del ViewModel
