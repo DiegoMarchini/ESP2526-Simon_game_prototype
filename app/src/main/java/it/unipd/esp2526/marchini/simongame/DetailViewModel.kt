@@ -37,7 +37,7 @@ class DetailViewModelFactory(
     private val application : Application,
     private val dao : GameDao
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass : Class<T>, extras : CreationExtras) : T {
+    override fun <T : ViewModel> create(modelClass : Class<T>) : T {
         if(modelClass.isAssignableFrom(DetailViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
             return DetailViewModel(application, dao) as T

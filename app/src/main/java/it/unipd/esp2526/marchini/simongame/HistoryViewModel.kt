@@ -34,7 +34,7 @@ class HistoryViewModelFactory(
     private val application : Application,
     private val dao : GameDao
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass : Class<T>, extras : CreationExtras) : T {
+    override fun <T : ViewModel> create(modelClass : Class<T>) : T {
         if(modelClass.isAssignableFrom(HistoryViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
             return HistoryViewModel(application, dao) as T
