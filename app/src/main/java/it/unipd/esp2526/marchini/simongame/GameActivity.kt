@@ -74,6 +74,11 @@ class GameActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onPause(){
+        super.onPause()
+        if(!isChangingConfigurations)viewModel.pauseGame()
+    }
 }
 
 @Composable
