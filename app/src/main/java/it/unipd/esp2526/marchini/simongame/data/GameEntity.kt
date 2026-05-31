@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Entity rappresentante una partita giocata, contiene:
+// id della partita, punteggio, sequenza finale, indice della sequenza dove è avvenuto l'errore
 @Entity(tableName = "games")
 data class GameEntity (
 

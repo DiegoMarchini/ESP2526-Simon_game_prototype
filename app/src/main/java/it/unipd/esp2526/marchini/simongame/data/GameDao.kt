@@ -13,7 +13,7 @@ interface GameDao{
     suspend fun insertGame(gameEntity : GameEntity)
 
     @Query("SELECT * FROM games")
-    fun getAllGames() : Flow<List<GameEntity>>
+    fun getAllGames() : Flow<List<GameEntity>> // scelto l'uso di Flow anzichè LiveData perchè più moderno e meglio integrato con Compose
 
     @Query("SELECT * FROM games WHERE id = :gameId")
     suspend fun getGameByID(gameId : Int) : GameEntity

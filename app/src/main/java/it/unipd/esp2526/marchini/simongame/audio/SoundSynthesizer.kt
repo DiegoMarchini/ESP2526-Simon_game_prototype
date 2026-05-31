@@ -7,7 +7,7 @@ import android.util.Log
 import kotlin.math.PI
 import kotlin.math.sin
 
-
+// classe per la generazione e la gestione delle tracce audio usate come feedback uditivi
 class SoundSynthesizer {
 
     val mTag = this::class.simpleName
@@ -15,7 +15,7 @@ class SoundSynthesizer {
     private val tracks = mutableListOf<AudioTrack>() // lista delle tracce audio
     private val frequencies = listOf(261.63, 293.66, 329.63, 349.23, 392.00, 440.00) // frequenze dei 6 toni (uno per button)
 
-    // creo le tracce da riprodurre e le inserisco in una lista
+    // creo le tracce audio e le inserisco in una lista
     init {
         frequencies.forEach {
             freq -> tracks.add(createTracks(freq))
@@ -61,9 +61,12 @@ class SoundSynthesizer {
         tracks[buttonId].reloadStaticData()
         tracks[buttonId].play()
     }
+
+    // funzione che blocca qualsiasi traccia in riproduzione
     fun stopAllTones(){
-        tracks.forEach { { it.stop()} }
+        tracks.forEach { it.stop() }
     }
+
     // funzione per rilasciare le risorse impegnate per la creazione e riproduzione delle tracce audio
     fun release(){
         tracks.forEach { it.release() }

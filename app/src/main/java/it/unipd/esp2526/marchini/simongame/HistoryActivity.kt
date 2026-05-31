@@ -53,6 +53,7 @@ import it.unipd.esp2526.marchini.simongame.data.GameEntity
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.getValue
 
+// activity contente la lista di partite giocate
 class HistoryActivity : ComponentActivity() {
 
     // creazione dell' HistoryViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della HistoryViewModelFactory
@@ -68,7 +69,7 @@ class HistoryActivity : ComponentActivity() {
             SimonGameTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    floatingActionButton = {
+                    floatingActionButton = { // button che consente di cominciare una nuova partita
                         ExtendedFloatingActionButton(
                         onClick = {
                             val intent = Intent(this, GameActivity::class.java)
@@ -160,6 +161,7 @@ fun GameStatsRow(game : GameEntity){
     val correctSequence = game.sequence.take(game.errorIndex * 3)
     val errorSequence = game.sequence.substring(game.errorIndex * 3)
 
+    // sequenza finale mostrata con due colori diversi
     val sequence = buildAnnotatedString {
         append(correctSequence)
         withStyle(style = SpanStyle(color = Color.Red)){append(errorSequence)}

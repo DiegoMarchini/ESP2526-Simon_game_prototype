@@ -14,24 +14,25 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-
+// ViewModel associato all'actvity DetailActivity
 class DetailViewModel(
     application : Application,
     private val dao : GameDao
 ) : AndroidViewModel(application) {
 
-    // uso una variabile privata che il ViewModel manipola, e ne espongo il valore in lettura  all'UI attraverso una variabile pubblica
+    // uso una variabile privata che il ViewModel manipola, e ne espongo il valore in lettura all'UI attraverso una variabile pubblica
     // mantengo l'incapsulamento
-    private val _selectedGame = MutableStateFlow<GameEntity>(GameEntity(0, 0, "",0))
+    private val _selectedGame = MutableStateFlow(GameEntity(0, 0, "",0))
     val selectedGame : StateFlow<GameEntity> = _selectedGame.asStateFlow()
 
-    // funzione per ottenere i dati relativi ad una partita indicandone l'ID (invocata in DetailActivity)
+    // funzione per ottenere i dati relativi ad una partita indicandone l'ID
     fun loadGameByID(gameId : Int) {
         viewModelScope.launch(Dispatchers.IO) {_selectedGame.value = dao.getGameByID(gameId)}
     }
 }
 
-
+// ViewModelFactory per la creazione di oggetti DetailViewModel
+// codice ispirato al codelab pubblicato su moodle
 class DetailViewModelFactory(
     private val application : Application,
     private val dao : GameDao

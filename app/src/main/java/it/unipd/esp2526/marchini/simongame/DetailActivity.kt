@@ -31,10 +31,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.withStyle
 import kotlin.getValue
 
-
+// activity della schermata del dettaglio partita, contiene i dati visibili nella schermata della lista partite e qualche informazione extra
 class DetailActivity : ComponentActivity() {
 
-    // creazione dell' DetailViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della DetailViewModelFactory
+    // creazione del DetailViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della DetailViewModelFactory
     private val viewModel: DetailViewModel by viewModels {
         val dao = AppDatabase.getDatabase(applicationContext).gameDao()
         DetailViewModelFactory(application, dao)
@@ -44,7 +44,7 @@ class DetailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val gameId = intent.getIntExtra("GAME_ID", -1)
+        val gameId = intent.getIntExtra("GAME_ID", -1) // id della partita da mostrare
 
         setContent {
             SimonGameTheme {
@@ -65,14 +65,16 @@ class DetailActivity : ComponentActivity() {
 @Composable
 fun ScreenThree(modifier : Modifier = Modifier, viewModel: DetailViewModel, gameId : Int){
 
-    LaunchedEffect(gameId) {  viewModel.loadGameByID(gameId) }
+    LaunchedEffect(gameId) {  viewModel.loadGameByID(gameId) } // ottengo le informazioni della partita da mostrare
     val game by viewModel.selectedGame.collectAsState()
 
-    val longestSequence = if(game.score != 0) game.sequence.take(game.score * 3 - 2) else "No sequence"
     // indice * 3 perchè la sequenza contiene anche spazi e virgole
-    val correctSequence = game.sequence.take(game.errorIndex * 3)
-    val errorSequence = game.sequence.substring(game.errorIndex * 3)
+    val longestSequence = if(game.score != 0) game.sequence.take(game.score * 3 - 2) else "No sequence" // più lunga sequenza digitata correttamente
+    val correctSequence = game.sequence.take(game.errorIndex * 3) // parte corretta della sequenza finale
+    val errorSequence = game.sequence.substring(game.errorIndex * 3) // parte sbagliata della sequenza finale
     val streak = (game.score * (game.score + 1) / 2) + game.errorIndex // quanti button sono stati premuti correttamente prima di sbagliare
+
+    // costruisco la stringa di due colori diversi
     val sequence = buildAnnotatedString {
         append(correctSequence)
         withStyle(style = SpanStyle(color = Color.Red)){append(errorSequence)}
@@ -83,6 +85,7 @@ fun ScreenThree(modifier : Modifier = Modifier, viewModel: DetailViewModel, game
             modifier = Modifier.weight(0.3f).fillMaxSize(),
             contentAlignment = Alignment.Center,
         ){
+            // punteggio
             Text(
                 text = "${stringResource(R.string.score_detail)}: ${game.score}",
                 color = Color(0xFFFBBF24),
@@ -111,6 +114,7 @@ fun ScreenThree(modifier : Modifier = Modifier, viewModel: DetailViewModel, game
             contentAlignment = Alignment.TopCenter,
 
             ){
+            // sequenza finale
             Text(
                 text = sequence,
                 fontSize = 24.sp,
@@ -124,6 +128,7 @@ fun ScreenThree(modifier : Modifier = Modifier, viewModel: DetailViewModel, game
             contentAlignment = Alignment.Center,
 
             ){
+            // sequenza corretta più lunga
             Text(
                 text = "${stringResource(R.string.longest_detail)}\n $longestSequence",
                 fontSize = 20.sp,
@@ -138,6 +143,7 @@ fun ScreenThree(modifier : Modifier = Modifier, viewModel: DetailViewModel, game
             contentAlignment = Alignment.TopCenter,
 
             ){
+            // numero di elementi premuti correttamente prima dell'errore
             Text(
                 text = "${stringResource(R.string.streak_detail)}: $streak",
                 fontSize = 24.sp,

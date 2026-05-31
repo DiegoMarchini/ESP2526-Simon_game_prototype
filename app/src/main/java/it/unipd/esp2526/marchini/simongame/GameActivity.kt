@@ -45,12 +45,12 @@ import it.unipd.esp2526.marchini.simongame.data.AppDatabase
 import it.unipd.esp2526.marchini.simongame.ui.theme.SimonGameTheme
 import kotlin.collections.listOf
 
-// lista di colori e lettere associate ai button della matrice 3x2 e relativa versione più spenta
+// lista di colori associati ai button della matrice 3x2 e relativa versione più spenta
 val buttonColors = listOf(Color.Red, Color.Green, Color.Blue,Color.Cyan,Color.Magenta, Color.Yellow)
 val dimmedColors = buttonColors.map {it.copy(alpha =0.6f)}
 
-// activity della prima schermata, contente
-// matrice 3x2 colorata, area di testo e area dei bottoni "Cancella" e "Fine Partita"
+// activity della schermata di gioco, contente
+// matrice 3x2 colorata, area di testo e area dei bottoni "Cancella", "Pausa/Riprendi" e "Fine Partita"
 class GameActivity : ComponentActivity() {
 
     // creazione del GameViewModel: ottengo il DAO e aggancio la variabile viewModel al risultato della GameViewModelFactory
@@ -87,10 +87,10 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
 
     val orientation = LocalConfiguration.current.orientation // catturo l'orientation per gestire le modalità PORTRAIT/LANDSCAPE
     val activity = LocalActivity.current // ottengo il contesto dell'Activity in cui è contenuto il composable per poter chiamare finish()
-    val sequence by viewModel.userSequence.collectAsState() // stato di GameActivity : la sequenza contenuta nell'area di testo multiriga non editabile
+    val sequence by viewModel.userSequence.collectAsState() // sequenza contenuta nell'area di testo multiriga non editabile
     val highlightedButtonIndex by viewModel.highlightIndex.collectAsState() // indico il button messo in evidenza dal computer
-    val score by viewModel.score.collectAsState()
-    val gameState by viewModel.gameState.collectAsState()
+    val score by viewModel.score.collectAsState() // punteggio
+    val gameState by viewModel.gameState.collectAsState() // stato di gioco (IDLE, COMPUTER_TURN, PLAYER_TURN, PAUSE, GAME_OVER)
 
 
     // azione dei tasti colorati, riceve come parametro l'indice del button premuto
@@ -98,26 +98,26 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
     // funzione passata come parametro al composable ColoredMatrix contenente i button colorati
     val coloredButtonAction : (Int) -> Unit = { index -> viewModel.checkMove(index) }
 
-    // azione del tasto "Avvia Partita", non fa niente
-    // funzione passata come parametro al composable ButtonArea che contiene il button "Avvia Partita"
+    // azione del tasto "Avvia Partita", funzione passata come parametro al composable relativo in ButtonArea
     val startGameAction : () -> Unit = { viewModel.startGame() }
 
+    // azioni del tasto "Pausa/Riprendi", funzioni passate come parametro al composable relativo in ButtonArea
     val pauseGameAction : () -> Unit = {viewModel.pauseGame()}
-
     val resumeGameAction : () -> Unit = {viewModel.resumeGame()}
 
-    // azione del tasto "Fine Partita", aggiorna la lista di sequenze giocate prima di cancellare la sequenza appena terminata
-    // funzione passata come parametro al composable ButtonArea che contiene il button "Fine Partita"
+    // azione del tasto "Fine Partita", funzioni passate come parametro al composable relativo in ButtonArea
     val endGameAction : () -> Unit = {
         if(gameState != GameState.GAME_OVER) viewModel.endGame() // in caso di GAME OVER il gioco è già stato salvato da checkMove
         activity?.finish() }
 
+    // gestione della pressione del tasto "Back" di sistema
     BackHandler(enabled = true) {endGameAction()}
 
     // adottato l'uso di Compose con componenti "rigide" per il layout (annidando row e column)
     // piuttosto che l'imposizione di vincoli tra oggetti
 
     if(gameState == GameState.GAME_OVER){
+        // segnalazione di errore e fine partita in caso di errore dell'utente nel digitare la sequenza
         Popup(alignment = Alignment.Center){
             Card(
                 modifier = Modifier.wrapContentSize(),
@@ -163,13 +163,13 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
                     text = sequence
                 )
 
-                // area dei button "Cancella" e "Fine Partita"
+                // area dei button "Avvia Partita", "Pausa/Riprendi" e "Fine Partita"
                 ButtonArea(
                     modifier = Modifier.weight(1f),
                     gameState = gameState,
-                    startGameAction = startGameAction, // azione del button "Cancella"
-                    pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
-                    resumeGameAction = resumeGameAction, // azione del tasto "Riprendi"
+                    startGameAction = startGameAction, // azione del button "Avvia Partita"
+                    pauseGameAction = pauseGameAction, // azione del button "Pausa"
+                    resumeGameAction = resumeGameAction, // azione del button "Riprendi"
                     endGameAction = endGameAction // azione del button "Fine Partita"
                 )
             }
@@ -197,13 +197,13 @@ fun ScreenOne(modifier: Modifier = Modifier, viewModel : GameViewModel) {
                 text = sequence
             )
 
-            // area dei button "Cancella" e "Fine Partita"
+            // area dei button "Avvia Partita", "Pausa/Riprendi" e "Fine Partita"
             ButtonArea(
                 modifier = Modifier.weight(1f),
                 gameState = gameState,
                 startGameAction = startGameAction, // azione del button "Avvia Partita"
-                pauseGameAction = pauseGameAction, // azione del tasto "Pausa"
-                resumeGameAction = resumeGameAction, // azione del tasto "Riprendi"
+                pauseGameAction = pauseGameAction, // azione del button "Pausa"
+                resumeGameAction = resumeGameAction, // azione del button "Riprendi"
                 endGameAction = endGameAction // azione del button "Fine Partita"
             )
         }
@@ -307,7 +307,7 @@ fun ButtonArea(
             )
         }
 
-        // button "Pausa"
+        // button "Pausa/Riprendi"
         Button(
             onClick = if(gameState == GameState.PAUSE) resumeGameAction
                       else pauseGameAction,

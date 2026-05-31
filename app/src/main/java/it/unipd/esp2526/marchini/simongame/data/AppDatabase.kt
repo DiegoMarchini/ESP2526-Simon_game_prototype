@@ -17,7 +17,7 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE : AppDatabase? = null
 
-        // restituisce INSTANCE se non è null, altrimenti crea una nuova istanza del db e la restituisce
+        // funzione restituisce INSTANCE se non è null, altrimenti crea una nuova istanza del db e la restituisce
         fun getDatabase(context : Context) : AppDatabase {
 
             // synchronized evita che più components creino più istanze del db contemporaneamente

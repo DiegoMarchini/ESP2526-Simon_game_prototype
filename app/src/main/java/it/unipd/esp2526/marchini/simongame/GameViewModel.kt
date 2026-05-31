@@ -22,7 +22,6 @@ enum class GameState {IDLE, COMPUTER_TURN, PLAYER_TURN, PAUSE, GAME_OVER}
 
 // ViewModel che gestisce le chiamate eseguite da UI a elementi terzi (DB, classi di logica e utility)
 // fornisce accesso ai dati all'UI esponendo variabili poi catturate dalle activity come stati di funzioni composable
-// serve a evitare di dover ripetere computazioni per activity che vengono distrutte e ricreate continuamente
 class GameViewModel(
     application : Application,
     private val dao : GameDao,
@@ -50,7 +49,9 @@ class GameViewModel(
 
     val buttonTexts = listOf("R", "G", "B", "C", "M", "Y") // lista di supporto
 
-    val sound = SoundSynthesizer()
+    val sound = SoundSynthesizer() // oggetto per la gestione dei feedback audio
+
+    // oggetto "computer di gioco" che si occupa di calcoli e riproduzioni di sequenze
     val computer = GameComputer(
         visibleFbAction = { index -> savedStateHandle["highlight_index"] = index}, // callback per consentire all'oggetto GameComputer di modificare la UI
         soundFbAction = { index -> sound.playTone(index)}, // callback per consentire all'oggetto GameComputer di riprodurre i suoni
@@ -63,13 +64,15 @@ class GameViewModel(
         super.onCleared()
         sound.release()
     }
+
+    // funzione per iniziare una partita
     fun startGame(){
         computer.resetSequence()
         savedStateHandle["score"] = 0
         startComputerTurn()
     }
 
-    // funzione per far iniziare il turno del computer (invocata in GameActivity)
+    // funzione per far iniziare il turno del computer
     fun startComputerTurn(){
         viewModelScope.launch {
             savedStateHandle["game_state"] = GameState.COMPUTER_TURN
@@ -79,7 +82,7 @@ class GameViewModel(
         }
     }
 
-    // funzione per controllare la correttezza del button cliccato dall'utente
+    // funzione per controllare la correttezza del button cliccato dall'utente e rispondere di conseguenza
     fun checkMove(index : Int) {
         if(gameState.value != GameState.PLAYER_TURN) return // ignoro la pressione di tasti se non è il turno del giocatore
         sound.stopAllTones()
@@ -89,6 +92,7 @@ class GameViewModel(
             delay(500)
             savedStateHandle["highlight_index"] = null
         }
+        // aggiorno la sequenza nell'area di testo
         val pressedButton = buttonTexts[index]
         savedStateHandle["user_sequence"] = if(userSequence.value.isNotBlank()) " ${userSequence.value}, $pressedButton"
                               else pressedButton
@@ -110,13 +114,16 @@ class GameViewModel(
 
     }
 
-    fun pauseGame(){ // col controllo tra indice e score mi assicuro che nel lasso di tempo tra presentazione dell'ultimo elemento e passaggio al PLAYER_TURN, non si possa premere pausa
+    // funzione per mettere in pausa il gioco
+    // col controllo tra indice e score mi assicuro che nel lasso di tempo tra presentazione dell'ultimo elemento e passaggio al PLAYER_TURN, non si possa premere pausa
+    fun pauseGame(){
         if(gameState.value == GameState.COMPUTER_TURN && playbackIndex.value < score.value){
             savedStateHandle["game_state"] = GameState.PAUSE
             sound.stopAllTones()
         }
     }
 
+    // funzione per riprendere il gioco dopo la messa in pausa
     fun resumeGame(){
         if(gameState.value == GameState.PAUSE){
             viewModelScope.launch{
@@ -127,13 +134,14 @@ class GameViewModel(
         }
     }
 
+    // funzione per terminare il gioco e inserire la nuova partita nel Database
     fun endGame(){
         if(score.value == 0 && (gameState.value == GameState.COMPUTER_TURN || gameState.value == GameState.IDLE)) return
         val finalSequence = computer.getColorSequence()
         insertGame(GameEntity(score = score.value , sequence = finalSequence, errorIndex = computerIndex.value))
     }
 
-    // funzione per inserire una nuova partita (invocata alla chiusura di GameActivity)
+    // funzione per inserire una nuova partita nel Database
     fun insertGame(game : GameEntity) = viewModelScope.launch(Dispatchers.IO) {
         dao.insertGame(game)
     }
