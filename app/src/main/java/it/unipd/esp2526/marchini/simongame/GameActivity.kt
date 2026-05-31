@@ -297,7 +297,7 @@ fun ButtonArea(
         Button(
             onClick = startGameAction,
             enabled = gameState == GameState.IDLE,
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
             Text(
                 text = stringResource(R.string.start_game),
@@ -333,7 +333,7 @@ fun ButtonArea(
         Button(
             onClick = endGameAction,
             enabled = (gameState != GameState.IDLE) && (gameState != GameState.GAME_OVER),
-            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp, horizontal = 6.dp)
+            modifier = modifier.fillMaxHeight().padding(vertical = 24.dp)
         ) {
             Text(
                 text = stringResource(R.string.end_game),
