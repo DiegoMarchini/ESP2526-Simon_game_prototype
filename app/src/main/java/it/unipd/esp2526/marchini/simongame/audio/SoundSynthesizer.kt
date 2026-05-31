@@ -3,14 +3,12 @@ package it.unipd.esp2526.marchini.simongame.audio
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
-import android.util.Log
 import kotlin.math.PI
 import kotlin.math.sin
 
 // classe per la generazione e la gestione delle tracce audio usate come feedback uditivi
 class SoundSynthesizer {
 
-    val mTag = this::class.simpleName
     private val sampleRate = 44100 // frequenza di campionamento (44.1 kHz)
     private val tracks = mutableListOf<AudioTrack>() // lista delle tracce audio
     private val frequencies = listOf(261.63, 293.66, 329.63, 349.23, 392.00, 440.00) // frequenze dei 6 toni (uno per button)
@@ -19,7 +17,6 @@ class SoundSynthesizer {
     init {
         frequencies.forEach {
             freq -> tracks.add(createTracks(freq))
-            Log.d(mTag, "istanziato il tono $freq")
         }
     }
 
